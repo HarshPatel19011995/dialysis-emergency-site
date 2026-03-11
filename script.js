@@ -165,3 +165,30 @@ Register Patient
 document.getElementById("result").innerHTML=html
 
 }
+
+function generateQR(){
+
+let id=document.getElementById("qrHospitalId").value.trim()
+
+if(!id){
+alert("Enter Hospital ID")
+return
+}
+
+let url=`https://harshpatel19011995.github.io/dialysis-emergency-site/home.html?id=${id}`
+
+let qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`
+
+document.getElementById("qrResult").innerHTML=`
+
+<img src="${qr}">
+
+<br>
+
+<a class="qr-download" href="${qr}" download="patient-${id}.png">
+Download QR
+</a>
+
+`
+
+}

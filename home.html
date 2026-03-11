@@ -52,8 +52,6 @@
 
 <div class="doctor-grid">
 
-<!-- DOCTOR 1 -->
-
 <div class="doctor-card">
 
 <h3>Dr. Jainam Shah</h3>
@@ -72,8 +70,6 @@
 
 </div>
 
-
-<!-- DOCTOR 2 -->
 
 <div class="doctor-card">
 
@@ -98,7 +94,7 @@
 </div>
 
 
-<!-- PATIENT SEARCH SECTION -->
+<!-- PATIENT SEARCH -->
 
 <div class="search-section">
 
@@ -113,9 +109,29 @@ oninput="searchPatient()"
 </div>
 
 
-<!-- SEARCH RESULT -->
-
 <div id="result"></div>
+
+
+
+<!-- QR GENERATOR -->
+
+<div class="qr-section">
+
+<h2>Generate Patient QR Code</h2>
+
+<input 
+id="qrHospitalId"
+placeholder="Enter Hospital ID to generate QR"
+>
+
+<button onclick="generateQR()">
+Generate QR Code
+</button>
+
+<div id="qrResult"></div>
+
+</div>
+
 
 </div>
 
@@ -127,9 +143,37 @@ oninput="searchPatient()"
 /* LOGOUT */
 
 function logout(){
-
 localStorage.removeItem("patientID")
 window.location="index.html"
+}
+
+
+/* QR GENERATOR */
+
+function generateQR(){
+
+let id=document.getElementById("qrHospitalId").value.trim()
+
+if(!id){
+alert("Enter Hospital ID")
+return
+}
+
+let url=`https://harshpatel19011995.github.io/dialysis-emergency-site/home.html?id=${id}`
+
+let qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`
+
+document.getElementById("qrResult").innerHTML=`
+
+<img src="${qr}" style="width:220px;margin-top:15px">
+
+<br>
+
+<a href="${qr}" download="patient-${id}.png" class="register-btn">
+Download QR
+</a>
+
+`
 
 }
 
