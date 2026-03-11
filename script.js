@@ -18,7 +18,6 @@ patients = data
 })
 
 
-
 /* LOGIN */
 
 function login(){
@@ -50,7 +49,6 @@ Register Patient
 }
 
 
-
 /* HIGHLIGHT SEARCH */
 
 function highlight(text,query){
@@ -63,6 +61,37 @@ return text.replace(regex,'<mark>$1</mark>')
 
 }
 
+
+/* CREATE QR CARD */
+
+function createQRCard(id){
+
+let url=baseURL+"?id="+id
+
+let qrImage="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(url)
+
+return `
+
+<div class="qr-card">
+
+<h3>Dialysis Emergency QR</h3>
+
+<img src="${qrImage}" class="qr-image">
+
+<p class="qr-id">Hospital ID: ${id}</p>
+
+<p class="qr-instruction">
+Scan to view emergency contact
+</p>
+
+<a class="qr-download" href="${qrImage}" download="patient-${id}.png">
+Download QR
+</a>
+
+</div>
+
+`
+}
 
 
 /* SEARCH PATIENT */
@@ -104,17 +133,12 @@ return 0
 })
 
 
-
 let html=""
 
 results.forEach(p=>{
 
 let name=p["Patient Full Name (દર્દીનું પૂરું નામ)"]
 let id=p["Hospital ID  (હોસ્પિટલ નંબર) "]
-
-let qrURL=baseURL+"?id="+id
-
-let qrImage="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="+encodeURIComponent(qrURL)
 
 html+=`
 
@@ -129,11 +153,11 @@ html+=`
 <p><b>Emergency Contact</b></p>
 
 <p>
-${p["Contact Name 1  (નામ)"]}
-(${p["Relation 1 (સંબંધ)"]})
+${p["Contact Name 1  (નામ)"] || ""}
+(${p["Relation 1 (સંબંધ)"] || ""})
 </p>
 
-<a class="call-btn" href="tel:${p["Phone Number 1  (ફોન નંબર)"]}">
+<a class="call-btn" href="tel:${p["Phone Number 1  (ફોન નંબર)"] || ""}">
 📞 CALL NOW
 </a>
 
@@ -164,26 +188,9 @@ ${p["Contact Name 2  (નામ)"]}
 }
 
 
+/* QR CARD */
 
-/* QR DOWNLOAD */
-
-html+=`
-
-<div class="contact-block">
-
-<p><b>Patient QR Code</b></p>
-
-<img src="${qrImage}" style="width:140px">
-
-<br>
-
-<a class="qr-download" href="${qrImage}" download="patient-${id}.png">
-Download QR
-</a>
-
-</div>
-
-`
+html+=createQRCard(id)
 
 html+=`</div>`
 
@@ -205,7 +212,6 @@ Register Patient
 document.getElementById("result").innerHTML=html
 
 }
-
 
 
 /* AUTO LOAD FROM QR */
@@ -230,7 +236,6 @@ searchPatient()
 }
 
 
-
 /* GENERATE QR MANUALLY */
 
 function generateQR(){
@@ -242,20 +247,6 @@ alert("Enter Hospital ID")
 return
 }
 
-let url=baseURL+"?id="+id
-
-let qr="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(url)
-
-document.getElementById("qrResult").innerHTML=`
-
-<img src="${qr}">
-
-<br>
-
-<a class="qr-download" href="${qr}" download="patient-${id}.png">
-Download QR
-</a>
-
-`
+document.getElementById("qrResult").innerHTML=createQRCard(id)
 
 }
