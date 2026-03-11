@@ -9,7 +9,7 @@
 
 <body>
 
-<!-- TOP HEADER -->
+<!-- HEADER -->
 
 <div class="top-header">
 
@@ -27,24 +27,23 @@
 
 <div class="container">
 
-<!-- LOGOUT BUTTON -->
+<!-- LOGOUT -->
 
 <div class="top-actions">
 <button onclick="logout()">Logout</button>
 </div>
 
 
-<!-- HOSPITAL HEADER -->
+<!-- HOSPITAL INFO -->
 
 <div class="hospital-header">
-
 <h2>Nephrology Department</h2>
 <p class="department">Emergency Patient Contact Lookup</p>
-
 </div>
 
 
-<!-- DOCTOR SECTION -->
+
+<!-- DOCTORS -->
 
 <div class="doctor-section">
 
@@ -94,6 +93,7 @@
 </div>
 
 
+
 <!-- PATIENT SEARCH -->
 
 <div class="search-section">
@@ -109,6 +109,8 @@ oninput="searchPatient()"
 </div>
 
 
+<!-- SEARCH RESULTS -->
+
 <div id="result"></div>
 
 
@@ -119,9 +121,11 @@ oninput="searchPatient()"
 
 <h2>Generate Patient QR Code</h2>
 
+<p>Enter Hospital ID to create a QR code for emergency scanning.</p>
+
 <input 
 id="qrHospitalId"
-placeholder="Enter Hospital ID to generate QR"
+placeholder="Hospital ID (Example: 26051B)"
 >
 
 <button onclick="generateQR()">
@@ -134,6 +138,7 @@ Generate QR Code
 
 
 </div>
+
 
 
 <script src="script.js"></script>
@@ -155,21 +160,23 @@ function generateQR(){
 let id=document.getElementById("qrHospitalId").value.trim()
 
 if(!id){
-alert("Enter Hospital ID")
+alert("Please enter Hospital ID")
 return
 }
 
-let url=`https://harshpatel19011995.github.io/dialysis-emergency-site/home.html?id=${id}`
+let baseURL="https://harshpatel19011995.github.io/dialysis-emergency-site/home.html"
 
-let qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`
+let patientURL=baseURL+"?id="+id
+
+let qr="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(patientURL)
 
 document.getElementById("qrResult").innerHTML=`
 
-<img src="${qr}" style="width:220px;margin-top:15px">
+<img src="${qr}">
 
 <br>
 
-<a href="${qr}" download="patient-${id}.png" class="register-btn">
+<a class="qr-download" href="${qr}" download="patient-${id}.png">
 Download QR
 </a>
 

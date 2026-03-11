@@ -4,7 +4,12 @@ const sheetURL =
 const googleFormLink =
 "https://docs.google.com/forms/d/e/1FAIpQLSfdspCDwTO3aiw4BHXj69qTx_idDA2xNnRa0YClTLI1tV_kVg/viewform"
 
+const baseURL =
+"https://harshpatel19011995.github.io/dialysis-emergency-site/home.html"
+
 let patients = []
+
+/* LOAD PATIENT DATA */
 
 fetch(sheetURL)
 .then(res => res.json())
@@ -13,11 +18,15 @@ patients = data
 })
 
 
+
 /* LOGIN */
 
 function login(){
 
-let id=document.getElementById("hospitalId").value.trim()
+let input=document.getElementById("hospitalId")
+if(!input) return
+
+let id=input.value.trim()
 
 let patient=patients.find(p =>
 String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim()===id
@@ -41,7 +50,8 @@ Register Patient
 }
 
 
-/* HIGHLIGHT FUNCTION */
+
+/* HIGHLIGHT SEARCH */
 
 function highlight(text,query){
 
@@ -54,11 +64,15 @@ return text.replace(regex,'<mark>$1</mark>')
 }
 
 
-/* SEARCH */
+
+/* SEARCH PATIENT */
 
 function searchPatient(){
 
-let query=document.getElementById("searchBox").value.toLowerCase().trim()
+let input=document.getElementById("searchBox")
+if(!input) return
+
+let query=input.value.toLowerCase().trim()
 
 if(query===""){
 document.getElementById("result").innerHTML=""
@@ -80,8 +94,8 @@ return id.includes(query)||name.includes(query)||phone.includes(query)
 
 results.sort((a,b)=>{
 
-let aName=a["Patient Full Name (દર્દીનું પૂરું નામ)"].toLowerCase()
-let bName=b["Patient Full Name (દર્દીનું પૂરું નામ)"].toLowerCase()
+let aName=(a["Patient Full Name (દર્દીનું પૂરું નામ)"]||"").toLowerCase()
+let bName=(b["Patient Full Name (દર્દીનું પૂરું નામ)"]||"").toLowerCase()
 
 if(aName.startsWith(query)) return -1
 if(bName.startsWith(query)) return 1
@@ -90,12 +104,17 @@ return 0
 })
 
 
+
 let html=""
 
 results.forEach(p=>{
 
 let name=p["Patient Full Name (દર્દીનું પૂરું નામ)"]
 let id=p["Hospital ID  (હોસ્પિટલ નંબર) "]
+
+let qrURL=baseURL+"?id="+id
+
+let qrImage="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="+encodeURIComponent(qrURL)
 
 html+=`
 
@@ -142,8 +161,29 @@ ${p["Contact Name 2  (નામ)"]}
 </div>
 
 `
-
 }
+
+
+
+/* QR DOWNLOAD */
+
+html+=`
+
+<div class="contact-block">
+
+<p><b>Patient QR Code</b></p>
+
+<img src="${qrImage}" style="width:140px">
+
+<br>
+
+<a class="qr-download" href="${qrImage}" download="patient-${id}.png">
+Download QR
+</a>
+
+</div>
+
+`
 
 html+=`</div>`
 
@@ -164,10 +204,11 @@ Register Patient
 
 document.getElementById("result").innerHTML=html
 
-
 }
 
-/* AUTO LOAD PATIENT FROM QR */
+
+
+/* AUTO LOAD FROM QR */
 
 window.onload=function(){
 
@@ -175,9 +216,12 @@ let params=new URLSearchParams(window.location.search)
 
 let id=params.get("id")
 
-if(id){
+if(!id) return
 
-document.getElementById("searchBox").value=id
+let searchBox=document.getElementById("searchBox")
+if(!searchBox) return
+
+searchBox.value=id
 
 setTimeout(()=>{
 searchPatient()
@@ -185,7 +229,10 @@ searchPatient()
 
 }
 
-}
+
+
+/* GENERATE QR MANUALLY */
+
 function generateQR(){
 
 let id=document.getElementById("qrHospitalId").value.trim()
@@ -195,9 +242,9 @@ alert("Enter Hospital ID")
 return
 }
 
-let url=`https://harshpatel19011995.github.io/dialysis-emergency-site/home.html?id=${id}`
+let url=baseURL+"?id="+id
 
-let qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`
+let qr="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(url)
 
 document.getElementById("qrResult").innerHTML=`
 
