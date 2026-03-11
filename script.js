@@ -164,4 +164,25 @@ Register Patient
 
 document.getElementById("result").innerHTML=html
 
+
+}
+
+/* AUTO LOAD PATIENT FROM QR */
+
+window.onload=function(){
+
+let params=new URLSearchParams(window.location.search)
+
+let id=params.get("id")
+
+if(id){
+
+document.getElementById("searchBox").value=id
+
+setTimeout(()=>{
+searchPatient()
+},300)
+
+}
+
 }
