@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Emergency Patient Lookup</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- TOP HEADER -->
+
+<div class="top-header">
+
+<div class="logo-area">
+<img src="images/logo.png" alt="Hospital Logo">
+</div>
+
+<div class="title-area">
+<h1>Shree Krishna Hospital</h1>
+<p>Dialysis Emergency System</p>
+</div>
+
+</div>
+
+
+<div class="container">
+
+<!-- LOGOUT BUTTON -->
+
+<div class="top-actions">
+<button onclick="logout()">Logout</button>
+</div>
+
+
+<!-- HOSPITAL HEADER -->
+
+<div class="hospital-header">
+
+<h2>Nephrology Department</h2>
+<p class="department">Emergency Patient Contact Lookup</p>
+
+</div>
+
+
+<!-- DOCTOR SECTION -->
+
+<div class="doctor-section">
+
+<h2>Nephrology Consultants</h2>
+
+<div class="doctor-grid">
+
+<!-- DOCTOR 1 -->
+
+<div class="doctor-card">
+
+<h3>Dr. Jainam Shah</h3>
+
+<p>MD DNB (Nephrology)</p>
+<p>Consultant Nephrologist & Transplant Physician</p>
+
+<p>📞 9978732496</p>
+<p>✉ shahjainam83@gmail.com</p>
+
+<p>🏥 Shree Krishna Hospital, Karamsad</p>
+
+<a class="call-btn" href="tel:9978732496">
+📞 Call Dr Jainam
+</a>
+
+</div>
+
+
+<!-- DOCTOR 2 -->
+
+<div class="doctor-card">
+
+<h3>Dr. Tirthesh Patel</h3>
+
+<p>MD DNB (Nephrology)</p>
+<p>Consultant Nephrologist & Transplant Physician</p>
+
+<p>📞 9408766750</p>
+<p>✉ tirth6194.tp@gmail.com</p>
+
+<p>🏥 Shree Krishna Hospital, Karamsad</p>
+
+<a class="call-btn second" href="tel:9408766750">
+📞 Call Dr Tirthesh
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- PATIENT SEARCH SECTION -->
+
+<div class="search-section">
+
+<h2>Patient Emergency Lookup</h2>
+
+<input 
+id="searchBox"
+placeholder="Search Patient Name or Hospital ID (દર્દીનું નામ અથવા હોસ્પિટલ નંબર)"
+oninput="searchPatient()"
+>
+
+</div>
+
+
+<!-- SEARCH RESULT -->
+
+<div id="result"></div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+<script>
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.removeItem("patientID")
+window.location="index.html"
+
+}
+
+</script>
+
+</body>
+
+</html>
