@@ -10,13 +10,35 @@ const baseURL =
 let patients = []
 
 
+
 /* LOAD PATIENT DATA */
 
 fetch(sheetURL)
 .then(res => res.json())
 .then(data => {
+
 patients = data
+
+/* AUTO LOAD PATIENT IF QR USED */
+
+let params = new URLSearchParams(window.location.search)
+let id = params.get("id")
+
+if(!id) return
+
+let searchBox = document.getElementById("searchBox")
+
+if(!searchBox) return
+
+searchBox.value = id
+
+searchPatient()
+
 })
+.catch(err=>{
+console.log("Sheet load error",err)
+})
+
 
 
 /* LOGIN */
@@ -83,7 +105,7 @@ return `
 
 <div class="qr-wrapper">
 
-<img src="${qrImage}" class="qr-image">
+<img src="${qrImage}" class="qr-image" crossorigin="anonymous">
 
 <img src="images/kidney.png" class="qr-center-icon">
 
@@ -105,28 +127,33 @@ Download QR
 }
 
 
-/* DOWNLOAD QR CARD IMAGE */
+
+/* DOWNLOAD QR CARD */
 
 function downloadQRCard(button){
 
 const card = button.closest(".qr-card")
 
+button.style.display="none"
+
 html2canvas(card,{
-scale:2,
+scale:3,
 backgroundColor:"#ffffff",
-useCORS:true,
-allowTaint:true
+useCORS:true
 }).then(canvas=>{
 
 let link=document.createElement("a")
 
-let id=card.querySelector(".qr-id").innerText.replace("Hospital ID: ","")
+let id=card.querySelector(".qr-id")
+.innerText.replace("Hospital ID: ","")
 
 link.download="dialysis-qr-"+id+".png"
 
 link.href=canvas.toDataURL("image/png")
 
 link.click()
+
+button.style.display="block"
 
 })
 
@@ -154,7 +181,7 @@ let id=String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").to
 let name=String(p["Patient Full Name (દર્દીનું પૂરું નામ)"]||"").toLowerCase()
 let phone=String(p["Phone Number 1  (ફોન નંબર)"]||"").toLowerCase()
 
-return id.includes(query) || name.includes(query) || phone.includes(query)
+return id.includes(query)||name.includes(query)||phone.includes(query)
 
 })
 
@@ -193,11 +220,11 @@ html+=`
 <p><b>Emergency Contact</b></p>
 
 <p>
-${p["Contact Name 1  (નામ)"] || ""}
-(${p["Relation 1 (સંબંધ)"] || ""})
+${p["Contact Name 1  (નામ)"]||""}
+(${p["Relation 1 (સંબંધ)"]||""})
 </p>
 
-<a class="call-btn" href="tel:${p["Phone Number 1  (ફોન નંબર)"] || ""}">
+<a class="call-btn" href="tel:${p["Phone Number 1  (ફોન નંબર)"]||""}">
 📞 CALL NOW
 </a>
 
@@ -225,11 +252,10 @@ ${p["Contact Name 2  (નામ)"]}
 </div>
 
 `
-
 }
 
 
-/* ADD QR CARD */
+/* ADD QR */
 
 html+=createQRCard(id)
 
@@ -256,32 +282,9 @@ document.getElementById("result").innerHTML=html
 
 
 
-/* AUTO LOAD PATIENT FROM QR */
+/* CUSTOM QR GENERATOR */
 
-window.onload=function(){
-
-let params=new URLSearchParams(window.location.search)
-
-let id=params.get("id")
-
-if(!id) return
-
-let searchBox=document.getElementById("searchBox")
-if(!searchBox) return
-
-searchBox.value=id
-
-setTimeout(()=>{
-searchPatient()
-},300)
-
-}
-
-
-
-/* GENERATE QR MANUALLY */
-
-function generateQR(){
+function generateCustomQR(){
 
 let id=document.getElementById("qrHospitalId").value.trim()
 
@@ -294,26 +297,13 @@ document.getElementById("qrResult").innerHTML=createQRCard(id)
 
 }
 
-/* CUSTOM QR GENERATOR */
 
-function generateCustomQR(){
 
-let id = document.getElementById("qrHospitalId").value.trim()
-
-if(!id){
-alert("Enter Hospital ID")
-return
-}
-
-document.getElementById("qrResult").innerHTML = createQRCard(id)
-
-}
-
-/* GENERATE QR FOR ALL PATIENTS */
+/* GENERATE ALL PATIENT QR */
 
 function generateAllPatientQR(){
 
-let container = document.getElementById("qrAllContainer")
+let container=document.getElementById("qrAllContainer")
 
 if(!container) return
 
