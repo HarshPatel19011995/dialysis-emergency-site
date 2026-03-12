@@ -72,12 +72,12 @@ function createQRCard(id){
 let url = baseURL + "?id=" + id
 
 let qrImage =
-"https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=" +
+"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
 encodeURIComponent(url)
 
 return `
 
-<div class="qr-card" id="qrCard">
+<div class="qr-card">
 
 <h3 class="qr-title">Dialysis Emergency QR</h3>
 
@@ -89,7 +89,7 @@ return `
 
 </div>
 
-<p class="qr-id">Hospital ID: ${id}</p>
+<p class="qr-id"><b>Hospital ID:</b> ${id}</p>
 
 <p class="qr-instruction">
 Scan to view emergency contact
@@ -102,8 +102,8 @@ Download QR
 </div>
 
 `
-}
 
+}
 
 
 /* DOWNLOAD QR CARD IMAGE */
@@ -112,11 +112,16 @@ function downloadQRCard(button){
 
 const card = button.closest(".qr-card")
 
-html2canvas(card).then(canvas => {
+html2canvas(card,{
+scale:2,
+backgroundColor:"#ffffff"
+}).then(canvas => {
 
 let link = document.createElement("a")
 
-link.download = "dialysis-patient-qr.png"
+let id = card.querySelector(".qr-id").innerText.replace("Hospital ID: ","")
+
+link.download = "dialysis-qr-"+id+".png"
 
 link.href = canvas.toDataURL("image/png")
 
@@ -311,18 +316,18 @@ let container = document.getElementById("qrAllContainer")
 
 if(!container) return
 
-let html = ""
+let html=""
 
-patients.forEach(p => {
+patients.forEach(p=>{
 
-let id = p["Hospital ID  (હોસ્પિટલ નંબર) "]
+let id=p["Hospital ID  (હોસ્પિટલ નંબર) "]
 
 if(!id) return
 
-html += createQRCard(id)
+html+=createQRCard(id)
 
 })
 
-container.innerHTML = html
+container.innerHTML=html
 
 }
