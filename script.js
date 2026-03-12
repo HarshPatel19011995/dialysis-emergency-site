@@ -102,7 +102,6 @@ Download QR
 </div>
 
 `
-
 }
 
 
@@ -112,18 +111,15 @@ function downloadQRCard(button){
 
 const card = button.closest(".qr-card")
 
-html2canvas(card,{
-scale:2,
-backgroundColor:"#ffffff"
-}).then(canvas => {
+html2canvas(card,{scale:2}).then(canvas=>{
 
-let link = document.createElement("a")
+let link=document.createElement("a")
 
-let id = card.querySelector(".qr-id").innerText.replace("Hospital ID: ","")
+let id=card.querySelector(".qr-id").innerText.replace("Hospital ID: ","")
 
-link.download = "dialysis-qr-"+id+".png"
+link.download="dialysis-qr-"+id+".png"
 
-link.href = canvas.toDataURL("image/png")
+link.href=canvas.toDataURL("image/png")
 
 link.click()
 

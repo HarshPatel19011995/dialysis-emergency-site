@@ -7,7 +7,7 @@ padding:0;
 
 
 /* =========================
-   HEADER
+HEADER
 ========================= */
 
 .top-header{
@@ -37,7 +37,7 @@ color:#777;
 
 
 /* =========================
-   MAIN CONTAINER
+MAIN CONTAINER
 ========================= */
 
 .container{
@@ -52,7 +52,7 @@ box-shadow:0 4px 18px rgba(0,0,0,0.08);
 
 
 /* =========================
-   SECTION SPACING
+SECTION SPACING
 ========================= */
 
 .doctor-section,
@@ -63,11 +63,11 @@ margin-top:45px;
 
 
 /* =========================
-   LOGOUT BUTTON
+LOGOUT BUTTON
 ========================= */
 
 .top-actions{
-margin-bottom:15px;
+margin-bottom:20px;
 }
 
 .top-actions button{
@@ -78,7 +78,7 @@ padding:10px 18px;
 
 
 /* =========================
-   HOSPITAL HEADER
+HOSPITAL HEADER
 ========================= */
 
 .hospital-header{
@@ -98,16 +98,13 @@ font-size:15px;
 
 
 /* =========================
-   DOCTOR SECTION
+DOCTOR SECTION
 ========================= */
 
 .doctor-section h2{
 margin-bottom:20px;
 font-size:22px;
 }
-
-
-/* GRID */
 
 .doctor-grid{
 display:grid;
@@ -116,7 +113,9 @@ gap:20px;
 }
 
 
-/* DOCTOR CARD */
+/* =========================
+DOCTOR CARD
+========================= */
 
 .doctor-card{
 background:#fdf5f5;
@@ -143,7 +142,7 @@ margin-top:15px;
 
 
 /* =========================
-   SEARCH SECTION
+SEARCH SECTION
 ========================= */
 
 .search-section{
@@ -155,7 +154,9 @@ margin-bottom:15px;
 }
 
 
-/* SEARCH INPUT */
+/* =========================
+INPUT
+========================= */
 
 input{
 width:100%;
@@ -168,7 +169,9 @@ margin-bottom:10px;
 }
 
 
-/* BUTTON */
+/* =========================
+BUTTON
+========================= */
 
 button{
 width:100%;
@@ -188,7 +191,7 @@ background:#0f5ed7;
 
 
 /* =========================
-   PATIENT RESULT CARD
+PATIENT CARD
 ========================= */
 
 .card{
@@ -207,7 +210,9 @@ color:#444;
 }
 
 
-/* CONTACT BLOCK */
+/* =========================
+CONTACT BLOCK
+========================= */
 
 .contact-block{
 margin-top:18px;
@@ -223,7 +228,7 @@ margin:6px 0;
 
 
 /* =========================
-   CALL BUTTONS
+CALL BUTTONS
 ========================= */
 
 .call-btn{
@@ -249,23 +254,24 @@ background:#ff6a3d;
 
 
 /* =========================
-   REGISTER BUTTON
+REGISTER BUTTON
 ========================= */
 
 .register-btn{
 display:inline-block;
-margin-top:15px;
-padding:12px 18px;
+margin-top:10px;
+padding:10px 16px;
 background:#28a745;
 color:white;
 text-decoration:none;
 border-radius:6px;
 font-weight:bold;
+margin-right:10px;
 }
 
 
 /* =========================
-   MESSAGE TEXT
+MESSAGE TEXT
 ========================= */
 
 #message{
@@ -277,17 +283,19 @@ text-align:center;
 
 
 /* =========================
-   QR SECTION
+QR SECTION
 ========================= */
 
 .qr-section{
 text-align:center;
-padding-top:25px;
+padding-top:30px;
 border-top:1px solid #e6e6e6;
 }
 
 
-/* QR CARD */
+/* =========================
+QR CARD
+========================= */
 
 .qr-card{
 margin-top:20px;
@@ -296,6 +304,8 @@ background:#fafafa;
 border-radius:12px;
 box-shadow:0 3px 12px rgba(0,0,0,0.1);
 display:inline-block;
+text-align:center;
+width:240px;
 }
 
 .qr-card h3{
@@ -303,46 +313,27 @@ margin-top:0;
 color:#c43c3c;
 }
 
-.qr-image{
-width:200px;
-margin:10px 0;
-}
 
-.qr-id{
-font-weight:bold;
-margin-top:5px;
-}
-
-.qr-instruction{
-font-size:13px;
-color:#777;
-}
-
-.qr-download{
-display:inline-block;
-margin-top:10px;
-padding:10px 15px;
-background:#28a745;
-color:white;
-border-radius:6px;
-text-decoration:none;
-}
-
-/* QR WRAPPER */
+/* =========================
+QR IMAGE
+========================= */
 
 .qr-wrapper{
 position:relative;
 display:inline-block;
+margin-top:10px;
 }
-
-/* QR IMAGE */
 
 .qr-image{
 width:200px;
+height:200px;
 display:block;
 }
 
-/* CENTER ICON */
+
+/* =========================
+CENTER ICON
+========================= */
 
 .qr-center-icon{
 position:absolute;
@@ -355,8 +346,54 @@ background:white;
 padding:5px;
 border-radius:8px;
 }
+
+
 /* =========================
-   HIGHLIGHT SEARCH
+QR TEXT
+========================= */
+
+.qr-id{
+font-weight:bold;
+margin-top:10px;
+}
+
+.qr-instruction{
+font-size:13px;
+color:#777;
+margin-top:5px;
+}
+
+
+/* =========================
+DOWNLOAD BUTTON
+========================= */
+
+.qr-download{
+display:inline-block;
+margin-top:12px;
+padding:10px 15px;
+background:#28a745;
+color:white;
+border-radius:6px;
+text-decoration:none;
+font-weight:bold;
+}
+
+
+/* =========================
+QR GRID
+========================= */
+
+.qr-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+gap:25px;
+margin-top:30px;
+}
+
+
+/* =========================
+HIGHLIGHT SEARCH
 ========================= */
 
 mark{
@@ -367,25 +404,8 @@ border-radius:4px;
 
 
 /* =========================
-   MOBILE
+FLOAT BUTTON
 ========================= */
-
-@media(max-width:768px){
-
-.container{
-padding:25px;
-}
-
-.doctor-grid{
-grid-template-columns:1fr;
-}
-
-.top-header{
-flex-direction:column;
-align-items:flex-start;
-}
-
-}
 
 .qr-float-btn{
 position:fixed;
@@ -405,11 +425,28 @@ z-index:999;
 background:#0f5ed7;
 }
 
-/* QR GRID */
+
+/* =========================
+MOBILE
+========================= */
+
+@media(max-width:768px){
+
+.container{
+padding:25px;
+}
+
+.doctor-grid{
+grid-template-columns:1fr;
+}
+
+.top-header{
+flex-direction:column;
+align-items:flex-start;
+}
 
 .qr-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-gap:25px;
-margin-top:30px;
+grid-template-columns:1fr;
+}
+
 }
