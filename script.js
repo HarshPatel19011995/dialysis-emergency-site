@@ -95,7 +95,7 @@ return `
 Scan to view emergency contact
 </p>
 
-<button class="qr-download" onclick="downloadQRCard()">
+<button class="qr-download" onclick="downloadQRCard(this)">
 Download QR
 </button>
 
@@ -108,11 +108,9 @@ Download QR
 
 /* DOWNLOAD QR CARD IMAGE */
 
-function downloadQRCard(){
+function downloadQRCard(button){
 
-const card = document.getElementById("qrCard")
-
-if(!card) return
+const card = button.closest(".qr-card")
 
 html2canvas(card).then(canvas => {
 
@@ -120,7 +118,7 @@ let link = document.createElement("a")
 
 link.download = "dialysis-patient-qr.png"
 
-link.href = canvas.toDataURL()
+link.href = canvas.toDataURL("image/png")
 
 link.click()
 
@@ -287,5 +285,44 @@ return
 }
 
 document.getElementById("qrResult").innerHTML=createQRCard(id)
+
+}
+
+/* CUSTOM QR GENERATOR */
+
+function generateCustomQR(){
+
+let id = document.getElementById("qrHospitalId").value.trim()
+
+if(!id){
+alert("Enter Hospital ID")
+return
+}
+
+document.getElementById("qrResult").innerHTML = createQRCard(id)
+
+}
+
+/* GENERATE QR FOR ALL PATIENTS */
+
+function generateAllPatientQR(){
+
+let container = document.getElementById("qrAllContainer")
+
+if(!container) return
+
+let html = ""
+
+patients.forEach(p => {
+
+let id = p["Hospital ID  (હોસ્પિટલ નંબર) "]
+
+if(!id) return
+
+html += createQRCard(id)
+
+})
+
+container.innerHTML = html
 
 }
