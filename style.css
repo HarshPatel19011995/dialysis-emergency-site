@@ -328,7 +328,33 @@ border-radius:6px;
 text-decoration:none;
 }
 
+/* QR WRAPPER */
 
+.qr-wrapper{
+position:relative;
+display:inline-block;
+}
+
+/* QR IMAGE */
+
+.qr-image{
+width:200px;
+display:block;
+}
+
+/* CENTER ICON */
+
+.qr-center-icon{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:40px;
+height:40px;
+background:white;
+padding:5px;
+border-radius:8px;
+}
 /* =========================
    HIGHLIGHT SEARCH
 ========================= */
