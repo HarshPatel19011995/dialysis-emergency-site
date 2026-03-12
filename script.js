@@ -111,7 +111,12 @@ function downloadQRCard(button){
 
 const card = button.closest(".qr-card")
 
-html2canvas(card,{scale:2}).then(canvas=>{
+html2canvas(card,{
+scale:2,
+backgroundColor:"#ffffff",
+useCORS:true,
+allowTaint:true
+}).then(canvas=>{
 
 let link=document.createElement("a")
 
