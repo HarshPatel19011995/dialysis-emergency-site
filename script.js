@@ -36,8 +36,6 @@ document.body.appendChild(bar)
 
 }
 
-
-
 /* ================================
 CONFIG
 ================================ */
@@ -53,10 +51,8 @@ const baseURL =
 
 let patients = []
 
-
-
 /* ================================
-FOOTER VERSION DISPLAY
+FOOTER VERSION + LIVE SEARCH
 ================================ */
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -69,11 +65,11 @@ el.innerText="Version "+APP_VERSION
 
 /* ENTER KEY LOGIN */
 
-let input=document.getElementById("hospitalId")
+let loginInput=document.getElementById("hospitalId")
 
-if(input){
+if(loginInput){
 
-input.addEventListener("keypress",function(e){
+loginInput.addEventListener("keypress",function(e){
 
 if(e.key==="Enter"){
 login()
@@ -83,9 +79,27 @@ login()
 
 }
 
+/* LIVE SEARCH */
+
+let searchBox=document.getElementById("searchBox")
+
+if(searchBox){
+
+let timeout
+
+searchBox.addEventListener("input",function(){
+
+clearTimeout(timeout)
+
+timeout=setTimeout(()=>{
+searchPatient()
+},300)
+
 })
 
+}
 
+})
 
 /* ================================
 SERVER STATUS
@@ -110,8 +124,6 @@ el.style.color="#ef4444"
 }
 
 }
-
-
 
 /* ================================
 LOAD PATIENT DATA
@@ -146,8 +158,6 @@ console.log("Sheet load error",err)
 updateServerStatus(false)
 })
 
-
-
 /* ================================
 LOGIN ROLES
 ================================ */
@@ -156,23 +166,21 @@ const STAFF_ID = "STAFF_SKH"
 const DEV_ID = "DEV_SKH"
 const ADMIN_ID = "ADMIN_SKH"
 
-
-
 /* ================================
 ROLE UI UPDATE
 ================================ */
 
-function updateLoginUI() {
+function updateLoginUI(){
 
-let role = document.querySelector('input[name="loginRole"]:checked').value
-let prompt = document.getElementById("loginPrompt")
-let input = document.getElementById("hospitalId")
+let role=document.querySelector('input[name="loginRole"]:checked').value
+let prompt=document.getElementById("loginPrompt")
+let input=document.getElementById("hospitalId")
 
 document.getElementById("message").innerHTML=""
 
 if(role==="patient"){
 prompt.innerText="Enter your Hospital ID to continue"
-input.placeholder="e.g. XXXX X"
+input.placeholder="e.g. 26051B"
 }
 
 else if(role==="staff"){
@@ -187,26 +195,22 @@ input.placeholder="e.g. DEV_SKH"
 
 }
 
-
-
 /* ================================
 HELPER VALUE READER
 ================================ */
 
-const getVal = (obj, partials) => {
+const getVal=(obj,partials)=>{
 
-for (let key in obj) {
+for(let key in obj){
 
-let keyLow = key.toLowerCase()
+let keyLow=key.toLowerCase()
 
-for (let part of partials) {
+for(let part of partials){
 
-if (keyLow.includes(part.toLowerCase())) {
+if(keyLow.includes(part.toLowerCase())){
 
-if (obj[key] !== undefined && obj[key] !== null) {
-
+if(obj[key]!==undefined && obj[key]!==null){
 return String(obj[key]).trim()
-
 }
 
 }
@@ -219,8 +223,6 @@ return ""
 
 }
 
-
-
 /* ================================
 LOGIN
 ================================ */
@@ -230,8 +232,6 @@ function login(){
 let input=document.getElementById("hospitalId")
 if(!input) return
 
-/* AUTO UPPERCASE */
-
 let id=input.value.trim().toUpperCase()
 
 let roleEl=document.querySelector('input[name="loginRole"]:checked')
@@ -239,19 +239,17 @@ let role=roleEl?roleEl.value:'patient'
 
 let msg=document.getElementById("message")
 
-/* BLOCK EMPTY INPUT */
-
 if(id===""){
 msg.innerHTML="⚠ Please enter your ID"
-input.focus()
 return
 }
 
+if(patients.length===0){
+msg.innerHTML="⏳ Loading patient database..."
+return
+}
 
-
-/* ================================
-DEVELOPER LOGIN
-================================ */
+/* DEVELOPER LOGIN */
 
 if(role==="developer"){
 
@@ -259,12 +257,11 @@ if(id===DEV_ID){
 
 localStorage.setItem("patientID",id)
 localStorage.setItem("isAdmin","true")
-
 window.location="home.html"
 
 }else{
 
-msg.innerHTML="❌ Invalid Developer ID"
+msg.innerHTML=t("invalid_dev_id")
 
 }
 
@@ -272,11 +269,7 @@ return
 
 }
 
-
-
-/* ================================
-STAFF LOGIN
-================================ */
+/* STAFF LOGIN */
 
 if(role==="staff"){
 
@@ -284,12 +277,11 @@ if(id===STAFF_ID || id===ADMIN_ID){
 
 localStorage.setItem("patientID",id)
 localStorage.setItem("isAdmin","true")
-
 window.location="home.html"
 
 }else{
 
-msg.innerHTML="❌ Invalid Staff ID"
+msg.innerHTML=t("invalid_staff_id")
 
 }
 
@@ -297,48 +289,30 @@ return
 
 }
 
-
-
-/* ================================
-PATIENT LOGIN
-================================ */
-
-/* PREVENT LOGIN BEFORE DATA LOAD */
-
-if(patients.length===0){
-
-msg.innerHTML="⏳ Loading patient database, please wait..."
-return
-
-}
+/* PATIENT LOGIN */
 
 let patient=patients.find(p =>
-getVal(p, ["Hospital ID","હોસ્પિટલ નંબર"]).toUpperCase() === id
+getVal(p,["Hospital ID","હોસ્પિટલ નંબર"]).toUpperCase()===id
 )
 
 if(patient){
 
 localStorage.setItem("patientID",id)
 localStorage.setItem("isAdmin","false")
-
 window.location="home.html"
 
 }else{
 
 msg.innerHTML=
-`${t("hospital_id_not_found")}<br>
-<a class="register-btn" href="${googleFormLink}" target="_blank">
-${t("register_patient")}
-</a>`
+`${t("hospital_id_not_found")}<br> <a class="register-btn" href="${googleFormLink}" target="_blank">
+${t("register_patient")} </a>`
 
 }
 
 }
-
-
 
 /* ================================
-SEARCH HIGHLIGHT
+HIGHLIGHT SEARCH
 ================================ */
 
 function highlight(text,query){
@@ -351,18 +325,16 @@ return text.replace(regex,'<mark>$1</mark>')
 
 }
 
-
-
 /* ================================
 CREATE QR CARD
 ================================ */
 
 function createQRCard(id){
 
-let url = baseURL + "?id=" + id
+let url=baseURL+"?id="+id
 
-let qrImage =
-"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
+let qrImage=
+"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+
 encodeURIComponent(url)
 
 return `
@@ -395,19 +367,17 @@ ${t("download_qr")}
 
 }
 
-
-
 /* ================================
-DOWNLOAD QR CARD
+DOWNLOAD QR
 ================================ */
 
 function downloadQRCard(button){
 
-const card = button.closest(".qr-card")
-const originalText = button.innerText
+const card=button.closest(".qr-card")
+const originalText=button.innerText
 
-button.innerText = t("generating")
-button.disabled = true
+button.innerText=t("generating")
+button.disabled=true
 button.style.display="none"
 
 html2canvas(card,{
@@ -419,37 +389,24 @@ allowTaint:false
 
 let link=document.createElement("a")
 
-let idElement = card.querySelector(".qr-id")
+let idElement=card.querySelector(".qr-id")
 
-let id = idElement
+let id=idElement
 ? idElement.innerText.replace("Hospital ID:\n","").replace("Hospital ID: ","").trim()
 : "card"
 
 link.download="dialysis-qr-"+id+".png"
-
 link.href=canvas.toDataURL("image/png")
 
 link.click()
 
 button.style.display="block"
-button.innerText = originalText
-button.disabled = false
-
-}).catch(err => {
-
-console.error("Download failed:", err)
-
-alert("Oops! Failed to generate the image. Please try again.")
-
-button.style.display="block"
-button.innerText = originalText
-button.disabled = false
+button.innerText=originalText
+button.disabled=false
 
 })
 
 }
-
-
 
 /* ================================
 SEARCH PATIENT
@@ -469,11 +426,23 @@ return
 
 let results=patients.filter(p=>{
 
-let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]).toLowerCase()
-let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"]).toLowerCase()
-let phone=getVal(p, ["Mobile Number", "Phone Number", "મોબાઇલ નંબર", "ફોન નંબર"]).toLowerCase()
+let id=getVal(p,["Hospital ID","હોસ્પિટલ નંબર"]).toLowerCase()
+let name=getVal(p,["Patient Full Name","દર્દીનું પૂરું નામ"]).toLowerCase()
+let phone=getVal(p,["Mobile Number","Phone Number","મોબાઇલ નંબર","ફોન નંબર"]).toLowerCase()
 
 return id.includes(query)||name.includes(query)||phone.includes(query)
+
+})
+
+results.sort((a,b)=>{
+
+let aName=getVal(a,["Patient Full Name","દર્દીનું પૂરું નામ"]).toLowerCase()
+let bName=getVal(b,["Patient Full Name","દર્દીનું પૂરું નામ"]).toLowerCase()
+
+if(aName.startsWith(query)) return -1
+if(bName.startsWith(query)) return 1
+
+return 0
 
 })
 
@@ -481,8 +450,11 @@ let html=""
 
 results.forEach(p=>{
 
-let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"])
-let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"])
+let name=getVal(p,["Patient Full Name","દર્દીનું પૂરું નામ"])
+let id=getVal(p,["Hospital ID","હોસ્પિટલ નંબર"])
+let phone1=getVal(p,["Mobile Number","Phone Number 1"])
+let contact1=getVal(p,["Contact Name 1"])
+let relation1=getVal(p,["Relation 1"])
 
 html+=`
 
@@ -492,9 +464,55 @@ html+=`
 
 <p><b>${t("hospital_id_label")}</b> ${highlight(id,query)}</p>
 
+<div class="contact-block">
+
+<p><b>${t("emergency_contact")}</b></p>
+
+<p>${contact1} (${relation1})</p>
+
+<a class="call-btn" href="tel:${phone1}">
+${t("call_now")}
+</a>
+
+</div>
+`
+
+let phone2=getVal(p,["Phone Number 2"])
+
+if(phone2){
+
+let contact2=getVal(p,["Contact Name 2"])
+let relation2=getVal(p,["Relation 2"])
+
+html+=`
+
+<div class="contact-block">
+
+<p><b>${t("second_contact")}</b></p>
+
+<p>${contact2} (${relation2})</p>
+
+<a class="call-btn second" href="tel:${phone2}">
+${t("call_second")}
+</a>
+
 </div>
 
 `
+}
+
+html+=`
+
+<div style="margin-top:20px;">
+<a class="details-btn" href="patient-details.html?id=${encodeURIComponent(id)}" target="_blank">
+${t("view_details")}
+</a>
+</div>
+`
+
+html+=createQRCard(id)
+
+html+=`</div>`
 
 })
 
@@ -502,10 +520,8 @@ document.getElementById("result").innerHTML=html
 
 }
 
-
-
 /* ================================
-CUSTOM QR GENERATOR
+CUSTOM QR
 ================================ */
 
 function generateCustomQR(){
@@ -521,8 +537,6 @@ document.getElementById("qrResult").innerHTML=createQRCard(id)
 
 }
 
-
-
 /* ================================
 GENERATE ALL QR
 ================================ */
@@ -537,7 +551,7 @@ let html=""
 
 patients.forEach(p=>{
 
-let id=getVal(p, ["Hospital ID","હોસ્પિટલ નંબર"])
+let id=getVal(p,["Hospital ID","હોસ્પિટલ નંબર"])
 
 if(!id) return
 
