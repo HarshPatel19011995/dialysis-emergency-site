@@ -156,7 +156,7 @@ document.getElementById("message").innerHTML=""
 
 if(role==="patient"){
 prompt.innerText="Enter your Hospital ID to continue"
-input.placeholder="e.g. 26051B"
+input.placeholder="e.g. XXXX X"
 }
 
 else if(role==="staff"){
