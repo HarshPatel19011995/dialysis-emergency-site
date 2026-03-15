@@ -3,11 +3,12 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Emergency Patient Lookup</title>
+<title data-i18n="title_home">Emergency Patient Lookup</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="lang.js"></script>
+<script src="https://cdnjs.cloudflare.cloudflare.cloudflare.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <body>
 
 <!-- HEADER -->
@@ -19,8 +20,14 @@
 </div>
 
 <div class="title-area">
-<h1>Shree Krishna Hospital</h1>
-<p>Dialysis Emergency System</p>
+<h1 data-i18n="login_h2">Shree Krishna Hospital</h1>
+<p data-i18n="login_p">Dialysis Emergency System</p>
+</div>
+
+<!-- LANGUAGE SWITCHER inside Top Header -->
+<div class="lang-switcher">
+  <button onclick="setLanguage('en')" class="lang-btn" id="btn-en">English</button>
+  <button onclick="setLanguage('gu')" class="lang-btn" id="btn-gu">ગુજરાતી</button>
 </div>
 
 </div>
@@ -31,50 +38,56 @@
 <!-- LOGOUT -->
 
 <div class="top-actions">
-<button onclick="logout()">Logout</button>
+<button onclick="logout()" data-i18n="btn_logout">Logout</button>
 
-<br><br>
-
-<a href="qr-maker.html" class="register-btn">
+<div id="adminActions" style="display: none;">
+<a href="qr-maker.html" class="register-btn" data-i18n="btn_create_qr">
 Create Patient QR
 </a>
 
-<a href="all-patient-qr.html" class="register-btn">
+<a href="all-patient-qr.html" class="register-btn" data-i18n="btn_all_qr">
 Generate All Patient QR
 </a>
+</div>
 </div>
 
 
 <!-- HOSPITAL INFO -->
 
 <div class="hospital-header">
-<h2>Nephrology Department</h2>
-<p class="department">Emergency Patient Contact Lookup</p>
+<img src="images/kidney.png" alt="Kidney Indicator" class="section-icon">
+<h2 data-i18n="dept_h2">Dialysis & Nephrology Department</h2>
+<p class="department" data-i18n="dept_p">Emergency Patient Contact Lookup</p>
 </div>
 
+<!-- MY ID CARD (ONLY FOR PATIENTS) -->
+<div id="myIdCardContainer" style="text-align: center; margin-bottom: 40px; display: none;">
+    <h2 data-i18n="my_id_h2">My Emergency ID</h2>
+    <div id="myIdCardContent"></div>
+</div>
 
 
 <!-- DOCTORS -->
 
 <div class="doctor-section">
 
-<h2>Nephrology Consultants</h2>
+<h2 data-i18n="consult_h2">Nephrology Consultants</h2>
 
 <div class="doctor-grid">
 
 <div class="doctor-card">
-
 <h3>Dr. Jainam Shah</h3>
 
-<p>MD DNB (Nephrology)</p>
-<p>Consultant Nephrologist & Transplant Physician</p>
+<p data-i18n="dr_jainam_p1">MD DNB (Nephrology)</p>
+<p data-i18n="dr_jainam_p2">Consultant Nephrologist & Transplant Physician</p>
 
+<div class="doctor-details">
 <p>📞 9978732496</p>
 <p>✉ shahjainam83@gmail.com</p>
-
 <p>🏥 Shree Krishna Hospital, Karamsad</p>
+</div>
 
-<a class="call-btn" href="tel:9978732496">
+<a class="call-btn" href="tel:9978732496" data-i18n="call_dr_jai">
 📞 Call Dr Jainam
 </a>
 
@@ -82,18 +95,18 @@ Generate All Patient QR
 
 
 <div class="doctor-card">
-
 <h3>Dr. Tirthesh Patel</h3>
 
-<p>MD DNB (Nephrology)</p>
-<p>Consultant Nephrologist & Transplant Physician</p>
+<p data-i18n="dr_tir_p1">MD DNB (Nephrology)</p>
+<p data-i18n="dr_tir_p2">Consultant Nephrologist & Transplant Physician</p>
 
+<div class="doctor-details">
 <p>📞 9408766750</p>
 <p>✉ tirth6194.tp@gmail.com</p>
-
 <p>🏥 Shree Krishna Hospital, Karamsad</p>
+</div>
 
-<a class="call-btn second" href="tel:9408766750">
+<a class="call-btn second" href="tel:9408766750" data-i18n="call_dr_tir">
 📞 Call Dr Tirthesh
 </a>
 
@@ -109,10 +122,11 @@ Generate All Patient QR
 
 <div class="search-section">
 
-<h2>Patient Emergency Lookup</h2>
+<h2 data-i18n="lookup_h2">Patient Emergency Lookup</h2>
 
 <input 
 id="searchBox"
+data-i18n="search_ph"
 placeholder="Search Patient Name or Hospital ID (દર્દીનું નામ અથવા હોસ્પિટલ નંબર)"
 oninput="searchPatient()"
 >
@@ -127,7 +141,21 @@ oninput="searchPatient()"
 
 </div>
 
-
+<!-- DEVELOPER SIGNATURE -->
+<div class="developer-signature" style="text-align: center; margin-top: -20px; margin-bottom: 40px;">
+  <div class="dev-brand">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="16 18 22 12 16 6"></polyline>
+      <polyline points="8 6 2 12 8 18"></polyline>
+    </svg>
+    <span data-i18n="dev_sig">A <strong>MayaMystic</strong> creation by Harsh Patel</span>
+  </div>
+  <div class="dev-contact">
+    <a href="mailto:harshpatel.unity@gmail.com" title="Email Developer">✉ harshpatel.unity@gmail.com</a>
+    <span class="dot">•</span>
+    <a href="tel:+917359938154" title="Call Developer">📞 +91 7359938154</a>
+  </div>
+</div>
 
 <script src="script.js"></script>
 
@@ -137,8 +165,37 @@ oninput="searchPatient()"
 
 function logout(){
 localStorage.removeItem("patientID")
+localStorage.removeItem("isAdmin")
 window.location="index.html"
 }
+
+/* CHECK ROLE ON LOAD */
+document.addEventListener("DOMContentLoaded", () => {
+    let isAdmin = localStorage.getItem("isAdmin") === "true";
+    let loggedInID = localStorage.getItem("patientID");
+    
+    let adminActions = document.getElementById("adminActions");
+    let myIdCardContainer = document.getElementById("myIdCardContainer");
+    let myIdCardContent = document.getElementById("myIdCardContent");
+
+    if (isAdmin && adminActions) {
+        // Admin View
+        adminActions.style.display = "block";
+    } else if (!isAdmin && myIdCardContainer && loggedInID) {
+        // Patient View: Show personal QR automatically
+        myIdCardContainer.style.display = "block";
+        // To render it immediately, wait for patients to load then render
+        let checkInterval = setInterval(() => {
+            if (patients && patients.length > 0) {
+                let p = patients.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim() === loggedInID);
+                if(p) {
+                   myIdCardContent.innerHTML = createQRCard(loggedInID);
+                }
+                clearInterval(checkInterval);
+            }
+        }, 500);
+    }
+});
 
 
 /* QR GENERATOR */

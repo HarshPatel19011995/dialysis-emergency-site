@@ -3,50 +3,87 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Dialysis Emergency Login</title>
+<title data-i18n="title_login">Dialysis Emergency Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<div class="login-page-wrapper">
 
-<!-- HOSPITAL HEADER -->
-
-<div class="top-header">
-
-<div class="logo-area">
-<img src="images/logo.png" alt="Hospital Logo">
+<!-- LANGUAGE SWITCHER -->
+<div class="lang-switcher">
+  <button onclick="setLanguage('en')" class="lang-btn" id="btn-en">English</button>
+  <button onclick="setLanguage('gu')" class="lang-btn" id="btn-gu">ગુજરાતી</button>
 </div>
 
-<div class="title-area">
-<h1>Shree Krishna Hospital</h1>
-<p>Dialysis Emergency System</p>
+<!-- LEFT SIDE: THEME BANNER -->
+<div class="login-banner">
+  <div class="banner-content">
+    <img src="images/kidney.png" alt="Kidney Icon" class="banner-icon">
+    <h1 data-i18n="banner_h1">Nephrology & Dialysis Care</h1>
+    <p data-i18n="banner_p">Rapid emergency contact retrieval and patient management system for Shree Krishna Hospital.</p>
+  </div>
+</div>
+
+<!-- RIGHT SIDE: LOGIN PANEL -->
+<div class="login-panel">
+  <div class="login-header">
+    <img src="images/logo.png" alt="Hospital Logo" class="hospital-logo">
+    <h2 data-i18n="login_h2">Shree Krishna Hospital</h2>
+    <p data-i18n="login_p">Dialysis Emergency System</p>
+  </div>
+
+  <div class="login-box">
+    <h3 data-i18n="login_box_h3">Login to Portal</h3>
+    
+    <div class="role-selector">
+      <label class="role-option">
+        <input type="radio" name="loginRole" value="patient" checked onchange="updateLoginUI()">
+        <span data-i18n="role_patient">Patient</span>
+      </label>
+      <label class="role-option">
+        <input type="radio" name="loginRole" value="staff" onchange="updateLoginUI()">
+        <span data-i18n="role_staff">Staff (DR)</span>
+      </label>
+      <label class="role-option">
+        <input type="radio" name="loginRole" value="developer" onchange="updateLoginUI()">
+        <span data-i18n="role_developer">Developer</span>
+      </label>
+    </div>
+
+    <p id="loginPrompt" style="margin-bottom: 16px;" data-i18n="prompt_patient">Enter your Hospital ID to continue</p>
+
+    <input 
+      id="hospitalId" 
+      placeholder="e.g. 26051B"
+    >
+
+    <button onclick="login()" class="primary-btn" data-i18n="btn_login">
+      Secure Login
+    </button>
+
+    <p id="message"></p>
+  </div>
+
+  <div class="developer-signature">
+    <div class="dev-brand">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"></polyline>
+        <polyline points="8 6 2 12 8 18"></polyline>
+      </svg>
+      <span data-i18n="dev_sig">A <strong>MayaMystic</strong> creation by Harsh Patel</span>
+    </div>
+    <div class="dev-contact">
+      <a href="mailto:harshpatel.unity@gmail.com" title="Email Developer">✉ harshpatel.unity@gmail.com</a>
+      <span class="dot">•</span>
+      <a href="tel:+917359938154" title="Call Developer">📞 +91 7359938154</a>
+    </div>
+  </div>
+
 </div>
 
 </div>
 
-
-<!-- LOGIN CONTAINER -->
-
-<div class="container">
-
-<h2>Patient Login</h2>
-
-<p>Enter your Hospital ID to continue</p>
-
-<input 
-id="hospitalId" 
-placeholder="Enter Hospital ID"
->
-
-<button onclick="login()">
-Login
-</button>
-
-<p id="message"></p>
-
-</div>
-
-
+<script src="lang.js"></script>
 <script src="script.js"></script>
 
 </body>

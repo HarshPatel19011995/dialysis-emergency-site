@@ -41,6 +41,29 @@ console.log("Sheet load error",err)
 
 
 
+const STAFF_ID = "STAFF_SKH" // Default Staff ID
+const DEV_ID = "DEV_SKH" // Default Developer ID
+const ADMIN_ID = "ADMIN_SKH" // Legacy Admin ID
+
+/* ROLE UI UPDATE */
+function updateLoginUI() {
+    let role = document.querySelector('input[name="loginRole"]:checked').value;
+    let prompt = document.getElementById("loginPrompt");
+    let input = document.getElementById("hospitalId");
+    document.getElementById("message").innerHTML = "";
+    
+    if (role === 'patient') {
+        prompt.innerText = "Enter your Hospital ID to continue";
+        input.placeholder = "e.g. 26051B";
+    } else if (role === 'staff') {
+        prompt.innerText = "Enter your Staff ID to continue";
+        input.placeholder = "e.g. STAFF_SKH";
+    } else if (role === 'developer') {
+        prompt.innerText = "Enter your Developer ID to continue";
+        input.placeholder = "e.g. DEV_SKH";
+    }
+}
+
 /* LOGIN */
 
 function login(){
@@ -49,7 +72,32 @@ let input=document.getElementById("hospitalId")
 if(!input) return
 
 let id=input.value.trim()
+let roleEl = document.querySelector('input[name="loginRole"]:checked');
+let role = roleEl ? roleEl.value : 'patient';
 
+if (role === 'developer') {
+    if (id === DEV_ID) {
+        localStorage.setItem("patientID",id)
+        localStorage.setItem("isAdmin", "true")
+        window.location="home.html"
+    } else {
+        document.getElementById("message").innerHTML = t("invalid_dev_id");
+    }
+    return;
+}
+
+if (role === 'staff') {
+    if (id === STAFF_ID || id === ADMIN_ID) {
+        localStorage.setItem("patientID",id)
+        localStorage.setItem("isAdmin", "true")
+        window.location="home.html"
+    } else {
+        document.getElementById("message").innerHTML = t("invalid_staff_id");
+    }
+    return;
+}
+
+// Patient login
 let patient=patients.find(p =>
 String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim()===id
 )
@@ -57,14 +105,16 @@ String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim()===
 if(patient){
 
 localStorage.setItem("patientID",id)
+localStorage.setItem("isAdmin", "false")
 window.location="home.html"
 
 }else{
 
 document.getElementById("message").innerHTML=
-`Hospital ID not found.<br>
+document.getElementById("message").innerHTML=
+`${t("hospital_id_not_found")}<br>
 <a class="register-btn" href="${googleFormLink}" target="_blank">
-Register Patient
+${t("register_patient")}
 </a>`
 
 }
@@ -101,7 +151,7 @@ return `
 
 <div class="qr-card">
 
-<h3 class="qr-title">Dialysis Emergency QR</h3>
+<h3 class="qr-title">${t("qr_title")}</h3>
 
 <div class="qr-wrapper">
 
@@ -111,14 +161,14 @@ return `
 
 </div>
 
-<p class="qr-id"><b>Hospital ID:</b> ${id}</p>
+<p class="qr-id"><b>${t("hospital_id_label")}</b> ${id}</p>
 
 <p class="qr-instruction">
-Scan to view emergency contact
+${t("qr_scan_inst")}
 </p>
 
 <button class="qr-download" onclick="downloadQRCard(this)">
-Download QR
+${t("download_qr")}
 </button>
 
 </div>
@@ -133,19 +183,25 @@ Download QR
 function downloadQRCard(button){
 
 const card = button.closest(".qr-card")
+const originalText = button.innerText;
 
+button.innerText = t("generating");
+button.disabled = true;
+// Temporarily hide button so it isn't in the screenshot
 button.style.display="none"
 
 html2canvas(card,{
 scale:3,
 backgroundColor:"#ffffff",
-useCORS:true
+useCORS:true,
+allowTaint: false // Prevent drawing tainted images which ruin the export
 }).then(canvas=>{
 
 let link=document.createElement("a")
 
-let id=card.querySelector(".qr-id")
-.innerText.replace("Hospital ID: ","")
+// Safely extract the ID. The text might have newlines or bold tags.
+let idElement = card.querySelector(".qr-id");
+let id = idElement ? idElement.innerText.replace("Hospital ID:\n","").replace("Hospital ID: ","").trim() : "card";
 
 link.download="dialysis-qr-"+id+".png"
 
@@ -154,7 +210,15 @@ link.href=canvas.toDataURL("image/png")
 link.click()
 
 button.style.display="block"
+button.innerText = originalText;
+button.disabled = false;
 
+}).catch(err => {
+console.error("Download failed:", err);
+alert("Oops! Failed to generate the image. Please try again.");
+button.style.display="block";
+button.innerText = originalText;
+button.disabled = false;
 })
 
 }
@@ -213,11 +277,11 @@ html+=`
 
 <h3>${highlight(name,query)}</h3>
 
-<p><b>Hospital ID:</b> ${highlight(id,query)}</p>
+<p><b>${t("hospital_id_label")}</b> ${highlight(id,query)}</p>
 
 <div class="contact-block">
 
-<p><b>Emergency Contact</b></p>
+<p><b>${t("emergency_contact")}</b></p>
 
 <p>
 ${p["Contact Name 1  (નામ)"]||""}
@@ -225,7 +289,7 @@ ${p["Contact Name 1  (નામ)"]||""}
 </p>
 
 <a class="call-btn" href="tel:${p["Phone Number 1  (ફોન નંબર)"]||""}">
-📞 CALL NOW
+${t("call_now")}
 </a>
 
 </div>
@@ -238,7 +302,7 @@ html+=`
 
 <div class="contact-block">
 
-<p><b>Second Contact</b></p>
+<p><b>${t("second_contact")}</b></p>
 
 <p>
 ${p["Contact Name 2  (નામ)"]}
@@ -246,7 +310,7 @@ ${p["Contact Name 2  (નામ)"]}
 </p>
 
 <a class="call-btn second" href="tel:${p["Phone Number 2  (ફોન નંબર)"]}">
-📞 CALL SECOND
+${t("call_second")}
 </a>
 
 </div>
@@ -255,7 +319,14 @@ ${p["Contact Name 2  (નામ)"]}
 }
 
 
-/* ADD QR */
+/* VIEW DETAILS BUTTON */
+html+=`
+<div style="margin-top:20px;">
+  <a class="details-btn" href="patient-details.html?id=${encodeURIComponent(id)}" target="_blank">
+    ${t("view_details")}
+  </a>
+</div>
+`
 
 html+=createQRCard(id)
 
@@ -267,10 +338,10 @@ html+=`</div>`
 if(results.length===0){
 
 html=`
-<p>No patient found</p>
+<p>${t("no_patient_found")}</p>
 
 <a class="register-btn" href="${googleFormLink}" target="_blank">
-Register Patient
+${t("register_patient")}
 </a>
 `
 
