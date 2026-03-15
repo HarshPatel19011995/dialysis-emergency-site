@@ -8,7 +8,6 @@ const baseURL =
 "https://harshpatel19011995.github.io/dialysis-emergency-site/home.html"
 
 let patients = []
-let searchIndex = []
 
 
 
@@ -19,23 +18,6 @@ fetch(sheetURL)
 .then(data => {
 
 patients = data
-
-/* BUILD SEARCH INDEX (FAST SEARCH) */
-
-searchIndex = patients.map(p => {
-
-let id = String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || "").toLowerCase().trim()
-let name = String(p["Patient Full Name (દર્દીનું પૂરું નામ)"] || "").toLowerCase().trim()
-let phone = String(p["Phone Number 1  (ફોન નંબર)"] || "").toLowerCase().trim()
-
-return {
-id,
-name,
-phone,
-data:p
-}
-
-})
 
 /* AUTO LOAD PATIENT IF QR USED */
 
@@ -48,7 +30,7 @@ let searchBox = document.getElementById("searchBox")
 
 if(!searchBox) return
 
-searchBox.value = id.trim()
+searchBox.value = id
 
 searchPatient()
 
@@ -59,40 +41,43 @@ console.log("Sheet load error",err)
 
 
 
-const STAFF_ID = "STAFF_SKH"
-const DEV_ID = "DEV_SKH"
-const ADMIN_ID = "ADMIN_SKH"
-
-
+const STAFF_ID = "STAFF_SKH" // Default Staff ID
+const DEV_ID = "DEV_SKH" // Default Developer ID
+const ADMIN_ID = "ADMIN_SKH" // Legacy Admin ID
 
 /* ROLE UI UPDATE */
-
-function updateLoginUI(){
-
-let role = document.querySelector('input[name="loginRole"]:checked').value
-let prompt = document.getElementById("loginPrompt")
-let input = document.getElementById("hospitalId")
-
-document.getElementById("message").innerHTML=""
-
-if(role==="patient"){
-prompt.innerText="Enter your Hospital ID to continue"
-input.placeholder="e.g. 26051B"
+function updateLoginUI() {
+    let role = document.querySelector('input[name="loginRole"]:checked').value;
+    let prompt = document.getElementById("loginPrompt");
+    let input = document.getElementById("hospitalId");
+    document.getElementById("message").innerHTML = "";
+    
+    if (role === 'patient') {
+        prompt.innerText = "Enter your Hospital ID to continue";
+        input.placeholder = "e.g. 26051B";
+    } else if (role === 'staff') {
+        prompt.innerText = "Enter your Staff ID to continue";
+        input.placeholder = "e.g. STAFF_SKH";
+    } else if (role === 'developer') {
+        prompt.innerText = "Enter your Developer ID to continue";
+        input.placeholder = "e.g. DEV_SKH";
+    }
 }
 
-else if(role==="staff"){
-prompt.innerText="Enter your Staff ID to continue"
-input.placeholder="e.g. STAFF_SKH"
-}
-
-else if(role==="developer"){
-prompt.innerText="Enter your Developer ID to continue"
-input.placeholder="e.g. DEV_SKH"
-}
-
-}
-
-
+// Helper function to safely extract values from form data regardless of exact column spaces/Gujarati text changes
+const getVal = (obj, partials) => {
+    for (let key in obj) {
+        let keyLow = key.toLowerCase();
+        for (let part of partials) {
+            if (keyLow.includes(part.toLowerCase())) {
+                if (obj[key] !== undefined && obj[key] !== null) {
+                    return String(obj[key]).trim(); // Return as string
+                }
+            }
+        }
+    }
+    return "";
+};
 
 /* LOGIN */
 
@@ -102,78 +87,41 @@ let input=document.getElementById("hospitalId")
 if(!input) return
 
 let id=input.value.trim()
+let roleEl = document.querySelector('input[name="loginRole"]:checked');
+let role = roleEl ? roleEl.value : 'patient';
 
-let roleEl=document.querySelector('input[name="loginRole"]:checked')
-let role=roleEl?roleEl.value:'patient'
-
-
-
-if(role==="developer"){
-
-if(id===DEV_ID){
-
-localStorage.setItem("patientID",id)
-localStorage.setItem("isAdmin","true")
-
-window.location="home.html"
-
+if (role === 'developer') {
+    if (id === DEV_ID) {
+        localStorage.setItem("patientID",id)
+        localStorage.setItem("isAdmin", "true")
+        window.location="home.html"
+    } else {
+        document.getElementById("message").innerHTML = t("invalid_dev_id");
+    }
+    return;
 }
 
-else{
-
-document.getElementById("message").innerHTML=t("invalid_dev_id")
-
+if (role === 'staff') {
+    if (id === STAFF_ID || id === ADMIN_ID) {
+        localStorage.setItem("patientID",id)
+        localStorage.setItem("isAdmin", "true")
+        window.location="home.html"
+    } else {
+        document.getElementById("message").innerHTML = t("invalid_staff_id");
+    }
+    return;
 }
 
-return
-
-}
-
-
-
-if(role==="staff"){
-
-if(id===STAFF_ID || id===ADMIN_ID){
-
-localStorage.setItem("patientID",id)
-localStorage.setItem("isAdmin","true")
-
-window.location="home.html"
-
-}
-
-else{
-
-document.getElementById("message").innerHTML=t("invalid_staff_id")
-
-}
-
-return
-
-}
-
-
-
-/* PATIENT LOGIN */
-
-let patient = patients.find(p =>
-String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || "")
-.trim()
-.toLowerCase() === id.toLowerCase()
-)
-
-
+// Patient login
+let patient=patients.find(p => getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]) === id);
 
 if(patient){
 
 localStorage.setItem("patientID",id)
-localStorage.setItem("isAdmin","false")
-
+localStorage.setItem("isAdmin", "false")
 window.location="home.html"
 
-}
-
-else{
+}else{
 
 document.getElementById("message").innerHTML=
 `${t("hospital_id_not_found")}<br>
@@ -238,7 +186,6 @@ ${t("download_qr")}
 </div>
 
 `
-
 }
 
 
@@ -248,27 +195,25 @@ ${t("download_qr")}
 function downloadQRCard(button){
 
 const card = button.closest(".qr-card")
+const originalText = button.innerText;
 
-const originalText = button.innerText
-
-button.innerText=t("generating")
-button.disabled=true
+button.innerText = t("generating");
+button.disabled = true;
+// Temporarily hide button so it isn't in the screenshot
 button.style.display="none"
 
 html2canvas(card,{
 scale:3,
 backgroundColor:"#ffffff",
 useCORS:true,
-allowTaint:false
+allowTaint: false // Prevent drawing tainted images which ruin the export
 }).then(canvas=>{
 
 let link=document.createElement("a")
 
-let idElement = card.querySelector(".qr-id")
-
-let id=idElement
-?idElement.innerText.replace("Hospital ID:\n","").replace("Hospital ID: ","").trim()
-:"card"
+// Safely extract the ID. The text might have newlines or bold tags.
+let idElement = card.querySelector(".qr-id");
+let id = idElement ? idElement.innerText.replace("Hospital ID:\n","").replace("Hospital ID: ","").trim() : "card";
 
 link.download="dialysis-qr-"+id+".png"
 
@@ -277,19 +222,15 @@ link.href=canvas.toDataURL("image/png")
 link.click()
 
 button.style.display="block"
-button.innerText=originalText
-button.disabled=false
+button.innerText = originalText;
+button.disabled = false;
 
-}).catch(err=>{
-
-console.error("Download failed:",err)
-
-alert("Failed to generate image. Please try again.")
-
-button.style.display="block"
-button.innerText=originalText
-button.disabled=false
-
+}).catch(err => {
+console.error("Download failed:", err);
+alert("Oops! Failed to generate the image. Please try again.");
+button.style.display="block";
+button.innerText = originalText;
+button.disabled = false;
 })
 
 }
@@ -300,13 +241,7 @@ button.disabled=false
 
 function searchPatient(){
 
-if(searchIndex.length===0){
-document.getElementById("result").innerHTML="Loading patient data..."
-return
-}
-
 let input=document.getElementById("searchBox")
-
 if(!input) return
 
 let query=input.value.toLowerCase().trim()
@@ -316,28 +251,40 @@ document.getElementById("result").innerHTML=""
 return
 }
 
+let results=patients.filter(p=>{
+
+let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]).toLowerCase()
+let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"]).toLowerCase()
+let phone=getVal(p, ["Mobile Number", "Phone Number", "મોબાઇલ નંબર", "ફોન નંબર"]).toLowerCase()
+
+return id.includes(query)||name.includes(query)||phone.includes(query)
+
+})
 
 
-let results = searchIndex
-.filter(p =>
-p.id.includes(query) ||
-p.name.includes(query) ||
-p.phone.includes(query)
-)
-.map(p => p.data)
+/* SORT BEST MATCH FIRST */
 
+results.sort((a,b)=>{
+
+let aName=getVal(a, ["Patient Full Name", "દર્દીનું પૂરું નામ"]).toLowerCase()
+let bName=getVal(b, ["Patient Full Name", "દર્દીનું પૂરું નામ"]).toLowerCase()
+
+if(aName.startsWith(query)) return -1
+if(bName.startsWith(query)) return 1
+
+return 0
+})
 
 
 let html=""
 
-
-
 results.forEach(p=>{
 
-let name=p["Patient Full Name (દર્દીનું પૂરું નામ)"]
-let id=String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim()
-
-
+let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"])
+let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"])
+let phone1=getVal(p, ["Mobile Number", "Phone Number 1", "મોબાઇલ નંબર"])
+let contact1=getVal(p, ["Contact Name 1", "Emergency Contact", "નામ"])
+let relation1=getVal(p, ["Relation 1", "સંબંધ"])
 
 html+=`
 
@@ -352,21 +299,21 @@ html+=`
 <p><b>${t("emergency_contact")}</b></p>
 
 <p>
-${p["Contact Name 1  (નામ)"]||""}
-(${p["Relation 1 (સંબંધ)"]||""})
+${contact1}
+(${relation1})
 </p>
 
-<a class="call-btn" href="tel:${p["Phone Number 1  (ફોન નંબર)"]||""}">
+<a class="call-btn" href="tel:${phone1}">
 ${t("call_now")}
 </a>
 
 </div>
 `
 
-
-
-if(p["Phone Number 2  (ફોન નંબર)"]){
-
+let phone2 = getVal(p, ["Phone Number 2", "બીજો નંબર"]);
+if(phone2){
+    let contact2 = getVal(p, ["Contact Name 2"]);
+    let relation2 = getVal(p, ["Relation 2"]);
 html+=`
 
 <div class="contact-block">
@@ -374,40 +321,34 @@ html+=`
 <p><b>${t("second_contact")}</b></p>
 
 <p>
-${p["Contact Name 2  (નામ)"]||""}
-(${p["Relation 2  (સંબંધ)"]||""})
+${contact2}
+(${relation2})
 </p>
 
-<a class="call-btn second" href="tel:${p["Phone Number 2  (ફોન નંબર)"]}">
+<a class="call-btn second" href="tel:${phone2}">
 ${t("call_second")}
 </a>
 
 </div>
 
 `
-
 }
 
 
-
+/* VIEW DETAILS BUTTON */
 html+=`
-
 <div style="margin-top:20px;">
-<a class="details-btn" href="patient-details.html?id=${encodeURIComponent(id)}" target="_blank">
-${t("view_details")}
-</a>
+  <a class="details-btn" href="patient-details.html?id=${encodeURIComponent(id)}" target="_blank">
+    ${t("view_details")}
+  </a>
 </div>
-
 `
-
-
 
 html+=createQRCard(id)
 
 html+=`</div>`
 
 })
-
 
 
 if(results.length===0){
@@ -422,15 +363,13 @@ ${t("register_patient")}
 
 }
 
-
-
 document.getElementById("result").innerHTML=html
 
 }
 
 
 
-/* CUSTOM QR */
+/* CUSTOM QR GENERATOR */
 
 function generateCustomQR(){
 
@@ -447,7 +386,7 @@ document.getElementById("qrResult").innerHTML=createQRCard(id)
 
 
 
-/* GENERATE ALL QR */
+/* GENERATE ALL PATIENT QR */
 
 function generateAllPatientQR(){
 
@@ -459,7 +398,7 @@ let html=""
 
 patients.forEach(p=>{
 
-let id=String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim()
+let id = getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]);
 
 if(!id) return
 

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title data-i18n="title_details">Patient Full Details</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="lang.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="top-header">
+  <div class="logo-area">
+    <img src="images/logo.png" alt="Hospital Logo">
+  </div>
+  <div class="title-area">
+    <h1 data-i18n="login_h2">Shree Krishna Hospital</h1>
+    <p data-i18n="login_p">Dialysis Emergency System</p>
+  </div>
+  <!-- LANGUAGE SWITCHER inside Top Header -->
+  <div class="lang-switcher">
+    <button onclick="setLanguage('en')" class="lang-btn" id="btn-en">English</button>
+    <button onclick="setLanguage('gu')" class="lang-btn" id="btn-gu">ગુજરાતી</button>
+  </div>
+</div>
+
+<div class="container">
+  
+  <div class="top-actions">
+    <button onclick="window.close()" style="background:var(--secondary);" data-i18n="close_details">Close Details</button>
+  </div>
+
+  <div class="hospital-header">
+    <img src="images/kidney.png" alt="Kidney Indicator" class="section-icon">
+    <h2 data-i18n="patient_med_details">Patient Medical Details</h2>
+    <p class="department" data-i18n="confidential_info">Confidential Health Information</p>
+  </div>
+
+  <div id="loading" style="text-align:center; padding: 40px; color: var(--text-muted);" data-i18n="loading">
+    Loading patient data...
+  </div>
+  
+  <div id="detailsCard" class="card" style="display:none; margin-top:20px;">
+    <!-- Rendered via JS -->
+  </div>
+
+</div>
+
+<!-- DEVELOPER SIGNATURE -->
+<div class="developer-signature" style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+  <div class="dev-brand">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="16 18 22 12 16 6"></polyline>
+      <polyline points="8 6 2 12 8 18"></polyline>
+    </svg>
+    <span data-i18n="dev_sig">A <strong>MayaMystic</strong> creation by Harsh Patel</span>
+  </div>
+</div>
+
+<script>
+  // We use the same sheetURL as script.js
+  const sheetURL = "https://opensheet.elk.sh/1bQWMz-5ikan9rHXwmPmmro70agzKbvTESWy-Ar3oXkQ/Form%20responses%201";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    let params = new URLSearchParams(window.location.search);
+    let targetId = params.get("id");
+
+    if(!targetId) {
+      document.getElementById("loading").innerHTML = t("error_no_id");
+      return;
+    }
+
+    fetch(sheetURL)
+      .then(res => res.json())
+      .then(data => {
+        let patient = data.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim() === targetId);
+
+        if(!patient) {
+          document.getElementById("loading").innerHTML = t("error_not_found");
+          return;
+        }
+
+        renderDetails(patient);
+      })
+      .catch(err => {
+        document.getElementById("loading").innerHTML = t("error_network");
+        console.error(err);
+      });
+  });
+
+  function renderDetails(p) {
+    document.getElementById("loading").style.display = "none";
+    
+    // Safely extract keys
+    let name = p["Patient Full Name (દર્દીનું પૂરું નામ)"] || "Unknown";
+    let id = p["Hospital ID  (હોસ્પિટલ નંબર) "] || "Unknown";
+    
+    // Helper to find value by partial key match (case-insensitive)
+    const getValue = (obj, partials) => {
+      for (let key in obj) {
+        for (let part of partials) {
+          if (key.toLowerCase().includes(part.toLowerCase())) {
+            let val = obj[key];
+            if (val && val.trim() !== "") return val;
+          }
+        }
+      }
+      return "Not specified";
+    };
+
+    let bloodGroup = getValue(p, ["Blood Group", "બ્લડ ગ્રુપ"]);
+    let accessType = getValue(p, ["Access Type", "એક્સેસ પ્રકાર", "AVF", "Permcath"]);
+    let dialysisDay = getValue(p, ["Dialysis Schedule", "દિવસ", "Shift"]);
+    
+    // New Form specific fields
+    let age = getValue(p, ["Age", "ઉંમર"]);
+    let sex = getValue(p, ["Sex", "જાતિ"]);
+    let dialysisCenter = getValue(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center"]);
+
+    // Emergency fields
+    let viralStatus = getValue(p, ["Viral Marker", "Viral", "HIV", "HCV", "HBsAg", "વાયરલ"]);
+    let dryWeight = getValue(p, ["Dry Weight", "Target Weight"]);
+    let ayushman = getValue(p, ["Ayushman Bharat", "PMJAY", "આયુષ્માન"]);
+    
+    // Additional health factors
+    let diagnosis = getValue(p, ["Diagnosis", "CKD", "ESRD", "HTN", "નિદાન"]);
+    let diabetes = getValue(p, ["Diabetic", "Diabetes", "ડાયાબિટીસ", "મધુપ્રમેહ"]);
+    let bloodPressure = getValue(p, ["BP", "Blood Pressure", "બ્લડ પ્રેશર"]);
+    let heartDisease = getValue(p, ["Heart", "Cardiac", "હૃદય રોગ"]);
+    let criticalMeds = getValue(p, ["critical medicine", "Medicine", "Medication", "દવા"]);
+
+    // Calculate color for Viral Markers based on text
+    let viralColor = 'var(--text-main)';
+    let vLow = viralStatus.toLowerCase();
+    if(vLow !== "not specified" && vLow !== "negative" && vLow !== "નેગેટિવ") {
+        viralColor = 'var(--danger)'; // Highlight positive cases in red
+    }
+
+    let html = `
+      <h3>${name}</h3>
+      <p style="margin-bottom: 4px;"><b>Hospital ID:</b> ${id}</p>
+      <p style="margin: 0; font-size: 14px; color: var(--text-muted);">
+        <span data-i18n="age">${t("age")}</span>: <b>${age}</b> &nbsp;|&nbsp; 
+        <span data-i18n="sex">${t("sex")}</span>: <b>${sex}</b>
+      </p>
+      <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-muted);">
+        <span data-i18n="center">${t("center")}</span>: <b>${dialysisCenter}</b>
+      </p>
+      
+      <!-- Primary Diagnosis Spotlight -->
+      <div style="margin-top:16px; margin-bottom: 24px; padding: 16px; background: rgba(37, 99, 235, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(37, 99, 235, 0.1);">
+        <p style="margin:0; font-size:13px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em;" data-i18n="primary_diagnosis">${t("primary_diagnosis")}</p>
+        <p style="margin:4px 0 0 0; font-size:18px; color:var(--text-main); font-weight:700;">${diagnosis}</p>
+      </div>
+
+      <hr style="border:0; border-top:1px solid #e2e8f0; margin: 24px 0;">
+      <h4 style="margin-top:0; color:var(--primary);" data-i18n="health_profile">${t("health_profile")}</h4>
+      
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="blood_group">${t("blood_group")}</span>
+          <span class="detail-value" style="color:var(--danger); font-weight:bold;">${bloodGroup}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="viral_markers">${t("viral_markers")}</span>
+          <span class="detail-value" style="color:${viralColor}; font-weight:bold;">${viralStatus}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="dry_weight">${t("dry_weight")}</span>
+          <span class="detail-value" style="font-weight:600;">${dryWeight}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="access_type">${t("access_type")}</span>
+          <span class="detail-value">${accessType}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="dialysis_day">${t("dialysis_day")}</span>
+          <span class="detail-value">${dialysisDay}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="ayushman_bharat">${t("ayushman_bharat")}</span>
+          <span class="detail-value" style="color:var(--success); font-weight:600;">${ayushman}</span>
+        </div>
+      </div>
+      
+      <h4 style="margin-top:24px; color:var(--primary);" data-i18n="critical_conditions">${t("critical_conditions")}</h4>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="diabetes">${t("diabetes")}</span>
+          <span class="detail-value" style="color:${diabetes !== 'Not specified' && diabetes.toLowerCase() !== 'no' && diabetes.toLowerCase() !== 'ના' ? 'var(--warning)' : 'var(--text-main)'}; font-weight:600;">${diabetes}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="blood_pressure">${t("blood_pressure")}</span>
+          <span class="detail-value" style="color:${bloodPressure !== 'Not specified' && bloodPressure.toLowerCase() !== 'no' && bloodPressure.toLowerCase() !== 'ના' ? 'var(--warning)' : 'var(--text-main)'}; font-weight:600;">${bloodPressure}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="heart_disease">${t("heart_disease")}</span>
+          <span class="detail-value" style="color:${heartDisease !== 'Not specified' && heartDisease.toLowerCase() !== 'no' && heartDisease.toLowerCase() !== 'ના' ? 'var(--danger)' : 'var(--text-main)'}; font-weight:600;">${heartDisease}</span>
+        </div>
+      </div>
+      
+      <!-- Critical Meds row spanning full width if present -->
+      <div style="margin-top:16px; background:#fff7ed; padding:12px; border-left:4px solid var(--warning); border-radius:4px;">
+        <span style="display:block; font-size:12px; color:#c2410c; font-weight:700; text-transform:uppercase; margin-bottom:4px;" data-i18n="critical_meds">${t("critical_meds")}</span>
+        <span style="font-weight:600; color:#9a3412;">${criticalMeds}</span>
+      </div>
+
+      <hr style="border:0; border-top:1px solid #e2e8f0; margin: 24px 0;">
+      <h4 style="color:var(--text-main);" data-i18n="raw_data">${t("raw_data")}</h4>
+      <div class="raw-data-box">
+    `;
+
+    // Print all non-empty properties (excluding raw timestamp)
+    for (let key in p) {
+      if(key !== "Timestamp" && p[key] && p[key].trim() !== "") {
+        html += `<p><b>${key}:</b> ${p[key]}</p>`;
+      }
+    }
+
+    html += `</div>`;
+
+    let card = document.getElementById("detailsCard");
+    card.innerHTML = html;
+    card.style.display = "block";
+  }
+</script>
+
+</body>
+</html>
