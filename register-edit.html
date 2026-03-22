@@ -592,17 +592,23 @@
 
         fetch(appsScriptURL, {
             method: "POST",
-            mode: "no-cors",
             headers: {
-                "Content-Type": "text/plain"
+                "Content-Type": "text/plain;charset=utf-8"
             },
             body: JSON.stringify(newPatient)
-        }).then(() => {
-            alert("Patient Data saved to Google Sheets!");
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert("Patient Data saved to Google Sheets successfully!");
+            } else {
+                alert("Google Apps Script Error: " + data.message);
+            }
             finishSubmit(newPatient["Hospital ID"]);
-        }).catch(err => {
-            console.error(err);
-            alert("Saved locally, but failed to save to Google Sheets. Check connection or Apps Script URL.");
+        })
+        .catch(err => {
+            console.error("Fetch Error:", err);
+            alert("Network Error: Could not connect to Google Apps Script. Check the URL and your internet connection.");
             finishSubmit(newPatient["Hospital ID"]);
         });
     } else {
