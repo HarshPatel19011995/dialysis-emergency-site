@@ -53,16 +53,20 @@
     <p id="loginPrompt" style="margin-bottom: 16px;" data-i18n="prompt_patient">Enter your Hospital ID to continue</p>
 
     <input 
-  id="hospitalId"
-  placeholder="Hospital ID (e.g. XXXX X)"
-  style="text-transform:uppercase"
->
+      id="hospitalId" 
+      placeholder="e.g. 26051B"
+    >
 
     <button onclick="login()" class="primary-btn" data-i18n="btn_login">
       Secure Login
     </button>
 
     <p id="message"></p>
+
+    <div style="margin-top: 15px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;" data-i18n="new_here">New to the system?</p>
+      <a href="register-edit.html" class="register-btn" data-i18n="register_patient" style="display:inline-block; text-decoration:none; background-color:var(--primary); color:white; padding:10px 20px; border-radius:var(--radius-sm); font-weight:bold;">Register Patient</a>
+    </div>
   </div>
 
   <div class="developer-signature">
@@ -86,27 +90,6 @@
 
 <script src="lang.js"></script>
 <script src="script.js"></script>
-
-<footer class="site-footer">
-
-  <div class="footer-content">
-
-    <div class="footer-left">
-      <strong>Shree Krishna Hospital</strong><br>
-      Dialysis Emergency System
-    </div>
-
-    <div class="footer-center">
-      <span id="appVersion">Version</span>
-    </div>
-
-    <div class="footer-right">
-      Developed by <strong>MayaMystic</strong> • Harsh Patel
-    </div>
-
-  </div>
-
-</footer>
 
 </body>
 

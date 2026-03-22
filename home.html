@@ -41,6 +41,10 @@
 <button onclick="logout()" data-i18n="btn_logout">Logout</button>
 
 <div id="adminActions" style="display: none;">
+<a href="register-edit.html" class="register-btn" data-i18n="register_patient" style="background-color: var(--primary); margin-bottom: 10px;">
+Register Patient
+</a>
+
 <a href="qr-maker.html" class="register-btn" data-i18n="btn_create_qr">
 Create Patient QR
 </a>
@@ -48,6 +52,10 @@ Create Patient QR
 <a href="all-patient-qr.html" class="register-btn" data-i18n="btn_all_qr">
 Generate All Patient QR
 </a>
+
+<button onclick="clearLocalData()" class="register-btn" style="background-color: var(--danger); margin-top: 10px;" data-i18n="clear_local_data">
+Clear Local Test Patients
+</button>
 </div>
 </div>
 
@@ -169,6 +177,15 @@ localStorage.removeItem("isAdmin")
 window.location="index.html"
 }
 
+/* CLEAR LOCAL DATA */
+function clearLocalData(){
+  if(confirm("Are you sure you want to completely erase all locally saved test patients? (This won't affect real data in Google Sheets)")) {
+    localStorage.removeItem("localPatients");
+    alert("Test patients cleared! Refreshing the page...");
+    window.location.reload();
+  }
+}
+
 /* CHECK ROLE ON LOAD */
 document.addEventListener("DOMContentLoaded", () => {
     let isAdmin = localStorage.getItem("isAdmin") === "true";
@@ -230,27 +247,6 @@ Download QR
 }
 
 </script>
-
-<footer class="site-footer">
-
-  <div class="footer-content">
-
-    <div class="footer-left">
-      <strong>Shree Krishna Hospital</strong><br>
-      Dialysis Emergency System
-    </div>
-
-    <div class="footer-center">
-      <span id="appVersion">Version</span>
-    </div>
-
-    <div class="footer-right">
-      Developed by <strong>MayaMystic</strong> • Harsh Patel
-    </div>
-
-  </div>
-
-</footer>
 
 </body>
 

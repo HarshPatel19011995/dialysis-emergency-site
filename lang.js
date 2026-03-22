@@ -71,21 +71,38 @@ const translations = {
     "primary_diagnosis": { en: "Primary Diagnosis (CKD/ESRD/HTN)", gu: "પ્રાથમિક નિદાન (CKD/ESRD/HTN)" },
     
     // New health conditions
-    "critical_conditions": { en: "Underlying Health Conditions", gu: "અંતર્ગત આરોગ્ય સ્થિતિઓ" },
-    "diabetes": { en: "Diabetes", gu: "ડાયાબિટીસ (મધુપ્રમેહ)" },
+    "allergy": { en: "Allergies", gu: "એલર્જી" },
+    "other_info": { en: "Other Information", gu: "અન્ય માહિતી" },
+    "health_conditions": { en: "Underlying Health Conditions", gu: "અંતર્ગત આરોગ્ય સ્થિતિઓ" },
+    "diabetes": { en: "Diabetes", gu: "ડાયાબિટીસ" },
     "blood_pressure": { en: "Blood Pressure (BP)", gu: "બ્લડ પ્રેશર (BP)" },
-    "heart_disease": { en: "Cardiac/Heart Disease", gu: "હૃદય રોગ" },
+    "cardiac": { en: "Cardiac / Heart Disease", gu: "હૃદય રોગ" },
+    "stroke_neuro": { en: "Stroke / Neurological", gu: "સ્ટ્રોક / ન્યુરોલોજીકલ" },
+    "home_address": { en: "Home Address", gu: "ઘરનું સરનામું" },
     
     // Emergency fields
     "viral_markers": { en: "Viral Status (HIV/HCV/HBsAg)", gu: "વાયરલ સ્ટેટસ (HIV/HCV/HBsAg)" },
     "dry_weight": { en: "Target/Dry Weight", gu: "લક્ષ્ય/ડ્રાય વજન" },
     "ayushman_bharat": { en: "Ayushman Bharat (PMJAY)", gu: "આયુષ્માન ભારત (PMJAY)" },
-    "critical_meds": { en: "Critical Medicines", gu: "આવશ્યક દવાઓ" },
     
     "raw_data": { en: "Raw Record Data", gu: "કાચો રેકોર્ડ ડેટા" },
     "error_no_id": { en: "Error: No Patient ID provided in URL.", gu: "ભૂલ: URL માં કોઈ દર્દી આઈડી (ID) આપવામાં આવ્યો નથી." },
     "error_not_found": { en: "Error: Patient not found or invalid ID.", gu: "ભૂલ: દર્દી મળ્યો નથી અથવા અમાન્ય આઈડી (ID)." },
-    "error_network": { en: "Network error loading data. Please try again.", gu: "ડેટા લોડ કરવામાં નેટવર્ક ભૂલ. કૃપયા ફરી પ્રયાસ કરો." }
+    "error_network": { en: "Network error loading data. Please try again.", gu: "ડેટા લોડ કરવામાં નેટવર્ક ભૂલ. કૃપયા ફરી પ્રયાસ કરો." },
+    
+    // register-edit.html
+    "title_register": { en: "Register / Edit Patient", gu: "દર્દીની નોંધણી / સંપાદન કરો" },
+    "btn_back": { en: "Back / Close", gu: "પાછા જાઓ / બંધ કરો" },
+    "form_instruction": { en: "Please fill in the patient details accurately.", gu: "કૃપા કરીને દર્દીની વિગતો ચોક્કસ ભરો." },
+    "personal_info": { en: "Personal Information", gu: "વ્યક્તિગત માહિતી" },
+    "patient_name_label": { en: "Patient Full Name", gu: "દર્દીનું પૂરું નામ" },
+    "hospital_details": { en: "Hospital Details", gu: "હોસ્પિટલની વિગતો" },
+    "medical_history": { en: "Medical History", gu: "તબીબી ઇતિહાસ" },
+    "emergency_contacts": { en: "Emergency Contacts", gu: "ઇમરજન્સી સંપર્કો" },
+    "patient_phone": { en: "Patient Phone Number", gu: "દર્દીનો ફોન નંબર" },
+    "btn_save": { en: "Save Data", gu: "માહિતી સાચવો" },
+    "edit_patient": { en: "Edit Patient", gu: "દર્દીની વિગતો સંપાદિત કરો" },
+    "success_save": { en: "Data saved locally (simulation). To write to the database, a backend integration is required.", gu: "ડેટા સ્થાનિક રીતે સાચવવામાં આવ્યો છે (સિમ્યુલેશન). ડેટાબેઝમાં સાચવવા માટે, બેકએન્ડ એકીકરણ જરૂરી છે." }
 };
 
 let currentLang = localStorage.getItem("appLang") || "en";

@@ -59,7 +59,7 @@
 
 <script>
   // We use the same sheetURL as script.js
-  const sheetURL = "https://opensheet.elk.sh/1bQWMz-5ikan9rHXwmPmmro70agzKbvTESWy-Ar3oXkQ/Form%20responses%201";
+  const sheetURL = "https://opensheet.elk.sh/1sVklcRg69aE7KRNCAT9VZORzROEQMw4OHwpIGcfkeaE/1";
 
   document.addEventListener("DOMContentLoaded", () => {
     let params = new URLSearchParams(window.location.search);
@@ -73,7 +73,16 @@
     fetch(sheetURL)
       .then(res => res.json())
       .then(data => {
-        let patient = data.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim() === targetId);
+        let localPatients = JSON.parse(localStorage.getItem("localPatients") || "[]");
+        let allPatients = [...data];
+        localPatients.forEach(lp => {
+           let hospitalId = lp["Hospital ID  (હોસ્પિટલ નંબર) "] || lp["Hospital ID"];
+           let idx = allPatients.findIndex(p => (p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"]) === hospitalId);
+           if (idx > -1) { allPatients[idx] = lp; }
+           else { allPatients.push(lp); }
+        });
+
+        let patient = allPatients.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"] || "").trim() === targetId);
 
         if(!patient) {
           document.getElementById("loading").innerHTML = t("error_not_found");
@@ -116,6 +125,7 @@
     let age = getValue(p, ["Age", "ઉંમર"]);
     let sex = getValue(p, ["Sex", "જાતિ"]);
     let dialysisCenter = getValue(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center"]);
+    let homeAddress = getValue(p, ["Address", "સરનામું", "Home"]);
 
     // Emergency fields
     let viralStatus = getValue(p, ["Viral Marker", "Viral", "HIV", "HCV", "HBsAg", "વાયરલ"]);
@@ -124,10 +134,12 @@
     
     // Additional health factors
     let diagnosis = getValue(p, ["Diagnosis", "CKD", "ESRD", "HTN", "નિદાન"]);
-    let diabetes = getValue(p, ["Diabetic", "Diabetes", "ડાયાબિટીસ", "મધુપ્રમેહ"]);
-    let bloodPressure = getValue(p, ["BP", "Blood Pressure", "બ્લડ પ્રેશર"]);
-    let heartDisease = getValue(p, ["Heart", "Cardiac", "હૃદય રોગ"]);
-    let criticalMeds = getValue(p, ["critical medicine", "Medicine", "Medication", "દવા"]);
+    let allergy = getValue(p, ["Allergy", "Allergies", "એલર્જી"]);
+    
+    let diabetes = getValue(p, ["Diabetic", "Diabetes", "ડાયાબિટીસ", "મધુપ્રમેહ"]) || "No";
+    let bloodPressure = getValue(p, ["BP", "Blood Pressure", "બ્લડ પ્રેશર"]) || "Normal";
+    let cardiac = getValue(p, ["Cardiac", "Heart", "હૃદય રોગ"]) || "No";
+    let strokeNeuro = getValue(p, ["Stroke", "Neuro", "Neurological", "સ્ટ્રોક"]) || "No";
 
     // Calculate color for Viral Markers based on text
     let viralColor = 'var(--text-main)';
@@ -147,10 +159,24 @@
         <span data-i18n="center">${t("center")}</span>: <b>${dialysisCenter}</b>
       </p>
       
+      <div style="margin-top:12px; font-size: 14px; color: var(--text-main); background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: flex-start; gap: 8px;">
+        <span style="font-size: 16px;">🏠</span>
+        <div>
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 2px;" data-i18n="home_address">${t("home_address")}</span>
+          <span style="font-weight: 500;">${homeAddress}</span>
+        </div>
+      </div>
+      
       <!-- Primary Diagnosis Spotlight -->
       <div style="margin-top:16px; margin-bottom: 24px; padding: 16px; background: rgba(37, 99, 235, 0.05); border-radius: var(--radius-sm); border: 1px solid rgba(37, 99, 235, 0.1);">
-        <p style="margin:0; font-size:13px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em;" data-i18n="primary_diagnosis">${t("primary_diagnosis")}</p>
-        <p style="margin:4px 0 0 0; font-size:18px; color:var(--text-main); font-weight:700;">${diagnosis}</p>
+        <p style="margin:0; font-size:13px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;" data-i18n="primary_diagnosis">${t("primary_diagnosis")}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          ${diagnosis && diagnosis !== 'Not specified' && diagnosis !== 'નિદાન નથી' ? 
+            diagnosis.split(',').map(d => d.trim()).filter(Boolean).map(d => 
+              `<span style="background:var(--primary); color:white; padding:6px 14px; border-radius:20px; font-weight:600; font-size:15px; box-shadow:0 1px 2px rgba(0,0,0,0.1);">${d}</span>`
+            ).join('') 
+          : `<span style="font-size:16px; color:var(--text-muted); font-weight:500;">Not specified</span>`}
+        </div>
       </div>
 
       <hr style="border:0; border-top:1px solid #e2e8f0; margin: 24px 0;">
@@ -183,26 +209,29 @@
         </div>
       </div>
       
-      <h4 style="margin-top:24px; color:var(--primary);" data-i18n="critical_conditions">${t("critical_conditions")}</h4>
-      <div class="details-grid">
-        <div class="detail-item">
-          <span class="detail-label" data-i18n="diabetes">${t("diabetes")}</span>
-          <span class="detail-value" style="color:${diabetes !== 'Not specified' && diabetes.toLowerCase() !== 'no' && diabetes.toLowerCase() !== 'ના' ? 'var(--warning)' : 'var(--text-main)'}; font-weight:600;">${diabetes}</span>
+      <h4 style="margin-top:24px; color:var(--primary);" data-i18n="health_conditions">${t("health_conditions")}</h4>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;" data-i18n="diabetes">🩸 ${t("diabetes")}</span>
+          <span style="font-weight: 600; color: ${diabetes !== 'Not specified' && diabetes.toLowerCase() !== 'no' && diabetes.toLowerCase() !== 'ના' ? '#ea580c' : 'var(--text-main)'};">${diabetes}</span>
         </div>
-        <div class="detail-item">
-          <span class="detail-label" data-i18n="blood_pressure">${t("blood_pressure")}</span>
-          <span class="detail-value" style="color:${bloodPressure !== 'Not specified' && bloodPressure.toLowerCase() !== 'no' && bloodPressure.toLowerCase() !== 'ના' ? 'var(--warning)' : 'var(--text-main)'}; font-weight:600;">${bloodPressure}</span>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;" data-i18n="blood_pressure">🩺 ${t("blood_pressure")}</span>
+          <span style="font-weight: 600; color: ${bloodPressure !== 'Not specified' && bloodPressure.toLowerCase() !== 'normal' && bloodPressure.toLowerCase() !== 'સામાન્ય' ? '#ea580c' : 'var(--text-main)'};">${bloodPressure}</span>
         </div>
-        <div class="detail-item">
-          <span class="detail-label" data-i18n="heart_disease">${t("heart_disease")}</span>
-          <span class="detail-value" style="color:${heartDisease !== 'Not specified' && heartDisease.toLowerCase() !== 'no' && heartDisease.toLowerCase() !== 'ના' ? 'var(--danger)' : 'var(--text-main)'}; font-weight:600;">${heartDisease}</span>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;" data-i18n="cardiac">❤️ ${t("cardiac")}</span>
+          <span style="font-weight: 600; color: ${cardiac !== 'Not specified' && cardiac.toLowerCase() !== 'no' && cardiac.toLowerCase() !== 'ના' ? '#dc2626' : 'var(--text-main)'};">${cardiac}</span>
+        </div>
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;" data-i18n="stroke_neuro">🧠 ${t("stroke_neuro")}</span>
+          <span style="font-weight: 600; color: ${strokeNeuro !== 'Not specified' && strokeNeuro.toLowerCase() !== 'no' && strokeNeuro.toLowerCase() !== 'ના' ? '#7c3aed' : 'var(--text-main)'};">${strokeNeuro}</span>
         </div>
       </div>
-      
-      <!-- Critical Meds row spanning full width if present -->
-      <div style="margin-top:16px; background:#fff7ed; padding:12px; border-left:4px solid var(--warning); border-radius:4px;">
-        <span style="display:block; font-size:12px; color:#c2410c; font-weight:700; text-transform:uppercase; margin-bottom:4px;" data-i18n="critical_meds">${t("critical_meds")}</span>
-        <span style="font-weight:600; color:#9a3412;">${criticalMeds}</span>
+
+      <h4 style="margin-top:24px; color:var(--primary);" data-i18n="allergy">${t("allergy")}</h4>
+      <div style="margin-top:16px; background:#fff7ed; padding:12px; border-left:4px solid var(--danger); border-radius:4px;">
+        <span style="font-weight:600; color:#9a3412;">${allergy}</span>
       </div>
 
       <hr style="border:0; border-top:1px solid #e2e8f0; margin: 24px 0;">
@@ -224,25 +253,6 @@
     card.style.display = "block";
   }
 </script>
-<footer class="site-footer">
 
-  <div class="footer-content">
-
-    <div class="footer-left">
-      <strong>Shree Krishna Hospital</strong><br>
-      Dialysis Emergency System
-    </div>
-
-    <div class="footer-center">
-      <span id="appVersion">Version</span>
-    </div>
-
-    <div class="footer-right">
-      Developed by <strong>MayaMystic</strong> • Harsh Patel
-    </div>
-
-  </div>
-
-</footer>
 </body>
 </html>
