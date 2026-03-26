@@ -69,20 +69,23 @@ const ADMIN_ID = "ADMIN_SKH" // Legacy Admin ID
 
 /* ROLE UI UPDATE */
 function updateLoginUI() {
-    let role = document.querySelector('input[name="loginRole"]:checked').value;
+    let roleEl = document.querySelector('input[name="loginRole"]:checked');
+    if (!roleEl) return;
+    let role = roleEl.value;
     let prompt = document.getElementById("loginPrompt");
     let input = document.getElementById("hospitalId");
+    if (!prompt || !input) return;
     document.getElementById("message").innerHTML = "";
     
     if (role === 'patient') {
         prompt.innerText = "Enter your Hospital ID to continue";
-        input.placeholder = "e.g. 26051B";
+        input.placeholder = "e.g. ABC123";
     } else if (role === 'staff') {
         prompt.innerText = "Enter your Staff ID to continue";
-        input.placeholder = "e.g. STAFF_SKH";
+        input.placeholder = "e.g. STAFF_ID";
     } else if (role === 'developer') {
         prompt.innerText = "Enter your Developer ID to continue";
-        input.placeholder = "e.g. DEV_SKH";
+        input.placeholder = "e.g. DEV_ID";
     }
 }
 
@@ -178,7 +181,7 @@ return `
 
 <img src="${qrImage}" class="qr-image" crossorigin="anonymous">
 
-<img src="images/kidney.png" class="qr-center-icon">
+<img src="images/DESLogo_2.png" class="qr-center-icon">
 
 </div>
 
@@ -297,25 +300,19 @@ let relation1=getVal(p, ["Relation 1", "સંબંધ"])
 
 html+=`
 
-<div class="card">
+<div class="card" style="border-left: 6px solid var(--primary);">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+  <h3 style="margin:0;">${highlight(name,query)}</h3>
+  <span style="background: rgba(37,99,235,0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">ACTIVE</span>
+</div>
 
-<h3>${highlight(name,query)}</h3>
+<p style="margin-bottom: 20px;"><b>${t("hospital_id_label")}</b> <span style="font-family: monospace; font-size: 16px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">${highlight(id,query)}</span></p>
 
-<p><b>${t("hospital_id_label")}</b> ${highlight(id,query)}</p>
-
-<div class="contact-block">
-
-<p><b>${t("emergency_contact")}</b></p>
-
-<p>
-${contact1}
-(${relation1})
-</p>
-
-<a class="call-btn" href="tel:${phone1}">
-${t("call_now")}
-</a>
-
+<div class="contact-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+<div class="contact-block" style="margin-top: 0; background: #fff; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+<p style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">${t("emergency_contact")}</p>
+<p style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">${contact1} (${relation1})</p>
+<a class="call-btn" href="tel:${phone1}" style="padding: 12px;">${t("call_now")}</a>
 </div>
 `
 

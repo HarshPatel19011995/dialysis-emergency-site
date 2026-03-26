@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shift-wise Patient List</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .filter-section {
+            background: #fff;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .filter-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            outline: none;
+        }
+        .filter-group select:focus, .filter-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .patient-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .patient-card {
+            background: #fff;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .patient-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .patient-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+        }
+        .patient-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .patient-info .meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .patient-info .meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .shift-tag {
+            display: inline-flex;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        .shift-morning { background: #e0f2fe; color: #0369a1; }
+        .shift-afternoon { background: #ffedd5; color: #9a3412; }
+        .shift-evening { background: #f3e8ff; color: #7e22ce; }
+        .shift-night { background: #e0e7ff; color: #3730a3; }
+        .shift-unknown { background: #f1f5f9; color: #475569; }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+        }
+        .btn-view {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .btn-view:hover {
+            background: var(--primary-hover);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <div class="logo-area">
+        <img src="images/logo.png" alt="Hospital Logo">
+    </div>
+    <div class="title-area">
+        <h1 data-i18n="login_h2">Shree Krishna Hospital</h1>
+        <p data-i18n="login_p">Dialysis Emergency System</p>
+    </div>
+    <div class="lang-switcher">
+        <button onclick="setLanguage('en')" class="lang-btn" id="btn-en">English</button>
+        <button onclick="setLanguage('gu')" class="lang-btn" id="btn-gu">ગુજરાતી</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="top-actions">
+        <button onclick="window.location.href='home.html'" style="background:var(--secondary);" data-i18n="btn_back">Back</button>
+    </div>
+
+    <div class="hospital-header">
+        <img src="images/DESLogo_2.png" alt="Kidney Indicator" class="section-icon">
+        <h2 data-i18n="shift_list_title">Shift-wise Patient List</h2>
+        <p class="department" data-i18n="shift_list_subtitle">Manage and view patients by their scheduled shift.</p>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-group">
+            <label data-i18n="select_day">Select Day</label>
+            <select id="dayPicker" onchange="filterPatients()">
+                <option value="Mon">Monday</option>
+                <option value="Tue">Tuesday</option>
+                <option value="Wed">Wednesday</option>
+                <option value="Thu">Thursday</option>
+                <option value="Fri">Friday</option>
+                <option value="Sat">Saturday</option>
+                <option value="Sun">Sunday</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label data-i18n="select_shift">Select Shift</label>
+            <select id="shiftPicker" onchange="filterPatients()">
+                <option value="All">All Shifts</option>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+                <option value="Night">Night</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Search Patient</label>
+            <input type="text" id="searchInput" placeholder="Name or Hospital ID..." oninput="filterPatients()">
+        </div>
+        <div style="grid-column: 1 / -1; margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+            <p id="resultCount" style="font-size: 14px; font-weight: 600; color: var(--primary); margin: 0;"></p>
+        </div>
+    </div>
+
+    <div id="loading" style="text-align:center; padding: 40px; color: var(--text-muted);" data-i18n="loading">
+        Loading schedule...
+    </div>
+
+    <div id="patientList" class="patient-list">
+        <!-- Rendered via JS -->
+    </div>
+</div>
+
+<!-- Footer/Signature -->
+<div class="developer-signature" style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+    <div class="dev-brand">
+        <span data-i18n="dev_sig">A <strong>MayaMystic</strong> creation by Harsh Patel</span>
+    </div>
+</div>
+
+<script src="lang.js"></script>
+<script>
+    const sheetURL = "https://opensheet.elk.sh/1sVklcRg69aE7KRNCAT9VZORzROEQMw4OHwpIGcfkeaE/1";
+    let allData = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Set default day to today
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const today = days[new Date().getDay()];
+        document.getElementById("dayPicker").value = today;
+
+        // 2. Load data
+        fetch(sheetURL)
+            .then(res => res.json())
+            .then(data => {
+                allData = data;
+                filterPatients();
+            })
+            .catch(err => {
+                document.getElementById("loading").innerHTML = "Error loading data.";
+                console.error(err);
+            });
+    });
+
+    function getValue(obj, partials) {
+        for (let key in obj) {
+            for (let part of partials) {
+                if (key.toLowerCase().includes(part.toLowerCase())) {
+                    let val = obj[key];
+                    if (val && String(val).trim() !== "") return String(val).trim();
+                }
+            }
+        }
+        return "";
+    }
+
+    function filterPatients() {
+        const selectedDay = document.getElementById("dayPicker").value;
+        const selectedShift = document.getElementById("shiftPicker").value;
+        const searchTerm = document.getElementById("searchInput").value.toLowerCase().trim();
+        const listDiv = document.getElementById("patientList");
+        const loadingDiv = document.getElementById("loading");
+        
+        loadingDiv.style.display = "none";
+        listDiv.innerHTML = "";
+
+        const filtered = allData.filter(p => {
+            // Check Days - handle both "Dialysis Days" and old "Dialysis Schedule"
+            let daysVal = getValue(p, ["Dialysis Days", "ડાયાલિસિસ દિવસ"]) || getValue(p, ["Dialysis Schedule", "શેડ્યૂલ"]) || "";
+            let scheduleStr = getValue(p, ["Dialysis Schedule", "શેડ્યૂલ"]) || "";
+            let nameVal = getValue(p, ["Patient Full Name", "નામ"]) || "";
+            let idVal = getValue(p, ["Hospital ID", "નંબર"]) || "";
+            
+            // New logic for "Mon: Morning" format
+            let dayMatch = false;
+            let shiftMatch = false;
+
+            if (scheduleStr.includes(":")) {
+                let dayPart = scheduleStr.split(",").find(s => s.trim().startsWith(selectedDay));
+                if (dayPart) {
+                    dayMatch = true;
+                    let actualShift = dayPart.split(":")[1].trim();
+                    shiftMatch = (selectedShift === "All" || actualShift.toLowerCase().includes(selectedShift.toLowerCase()));
+                }
+            } else {
+                // Fallback for old format
+                dayMatch = daysVal.toLowerCase().includes(selectedDay.toLowerCase());
+                let shiftVal = getValue(p, ["Dialysis Shift", "શિફ્ટ"]) || scheduleStr || "";
+                shiftMatch = selectedShift === "All" || shiftVal.toLowerCase().includes(selectedShift.toLowerCase());
+            }
+
+            let searchMatch = !searchTerm || 
+                              nameVal.toLowerCase().includes(searchTerm) || 
+                              idVal.toLowerCase().includes(searchTerm);
+            
+            return dayMatch && shiftMatch && searchMatch;
+        });
+
+        document.getElementById("resultCount").innerHTML = `Showing ${filtered.length} patients for ${selectedDay} ${selectedShift !== 'All' ? selectedShift : ''}`;
+
+        if (filtered.length === 0) {
+            listDiv.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px; background: white; border-radius: 12px; border: 1px dashed #e2e8f0;">No patients found for this selection.</div>';
+            return;
+        }
+
+        filtered.forEach(p => {
+            let name = getValue(p, ["Patient Full Name", "નામ"]) || "Unknown Patient";
+            let id = getValue(p, ["Hospital ID", "નંબર"]) || "N/A";
+            let age = getValue(p, ["Age", "ઉંમર"]) || "?";
+            let sex = getValue(p, ["Sex", "જાતિ"]) || "?";
+            let center = getValue(p, ["Dialysis center", "સેન્ટર"]) || "Main Center";
+
+            // Extract shift for the selected day
+            let shift = "N/A";
+            let scheduleStr = getValue(p, ["Dialysis Schedule", "શેડ્યૂલ"]);
+            if (scheduleStr.includes(":")) {
+                let dayPart = scheduleStr.split(",").find(s => s.trim().startsWith(selectedDay));
+                if (dayPart) {
+                    shift = dayPart.split(":")[1].trim();
+                }
+            } else {
+                shift = getValue(p, ["Dialysis Shift", "શિફ્ટ"]) || scheduleStr || "N/A";
+            }
+
+            let shiftClass = "shift-unknown";
+            let sLow = shift.toLowerCase();
+            if (sLow.includes("morn")) shiftClass = "shift-morning";
+            else if (sLow.includes("noon") || sLow.includes("after")) shiftClass = "shift-afternoon";
+            else if (sLow.includes("even")) shiftClass = "shift-evening";
+            else if (sLow.includes("night")) shiftClass = "shift-night";
+
+            let card = document.createElement("div");
+            card.className = "patient-card";
+            card.innerHTML = `
+                <div class="patient-info">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <h4>${name}</h4>
+                        <span class="shift-tag ${shiftClass}">${shift}</span>
+                    </div>
+                    <div class="meta">
+                        <span><b>ID:</b> ${id}</span>
+                        <span><b>Age:</b> ${age}</span>
+                        <span><b>Sex:</b> ${sex}</span>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        ${center}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Medical Record Active</span>
+                    <a href="patient-details.html?id=${encodeURIComponent(id)}" class="btn-view">View Profile</a>
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+</script>
+
+</body>
+</html>

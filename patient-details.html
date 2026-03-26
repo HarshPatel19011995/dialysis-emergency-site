@@ -26,14 +26,20 @@
 
 <div class="container">
   
-  <div class="top-actions">
-    <button onclick="window.close()" style="background:var(--secondary);" data-i18n="close_details">Close Details</button>
+  <div class="top-actions" style="justify-content: space-between;">
+    <button onclick="window.location.href='home.html'" style="background:var(--secondary); width: auto;" data-i18n="close_details">← Back</button>
+    <button onclick="window.print()" style="background:var(--primary); width: auto; display: flex; align-items: center; gap: 8px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Print Details
+    </button>
   </div>
 
-  <div class="hospital-header">
-    <img src="images/kidney.png" alt="Kidney Indicator" class="section-icon">
-    <h2 data-i18n="patient_med_details">Patient Medical Details</h2>
-    <p class="department" data-i18n="confidential_info">Confidential Health Information</p>
+  <div class="hospital-header" style="text-align: left; display: flex; align-items: center; gap: 20px; background: white; padding: 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0;">
+    <img src="images/DESLogo_2.png" alt="Kidney Indicator" class="section-icon" style="margin-bottom: 0; width: 64px; height: 64px;">
+    <div>
+      <h2 style="margin: 0; font-size: 24px;" data-i18n="patient_med_details">Patient Medical Details</h2>
+      <p class="department" style="font-size: 14px; margin-top: 4px;" data-i18n="confidential_info">Confidential Health Information</p>
+    </div>
   </div>
 
   <div id="loading" style="text-align:center; padding: 40px; color: var(--text-muted);" data-i18n="loading">
@@ -61,6 +67,19 @@
   // We use the same sheetURL as script.js
   const sheetURL = "https://opensheet.elk.sh/1sVklcRg69aE7KRNCAT9VZORzROEQMw4OHwpIGcfkeaE/1";
 
+  // Helper to find value by partial key match (case-insensitive)
+  const getValue = (obj, partials) => {
+    for (let key in obj) {
+      for (let part of partials) {
+        if (key.toLowerCase().includes(part.toLowerCase())) {
+          let val = obj[key];
+          if (val && String(val).trim() !== "") return String(val).trim();
+        }
+      }
+    }
+    return "Not specified";
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
     let params = new URLSearchParams(window.location.search);
     let targetId = params.get("id");
@@ -76,13 +95,13 @@
         let localPatients = JSON.parse(localStorage.getItem("localPatients") || "[]");
         let allPatients = [...data];
         localPatients.forEach(lp => {
-           let hospitalId = lp["Hospital ID  (હોસ્પિટલ નંબર) "] || lp["Hospital ID"];
-           let idx = allPatients.findIndex(p => (p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"]) === hospitalId);
+           let hospitalId = getValue(lp, ["Hospital ID", "હોસ્પિટલ નંબર"]);
+           let idx = allPatients.findIndex(p => getValue(p, ["Hospital ID", "હોસ્પિટલ નંબર"]) === hospitalId);
            if (idx > -1) { allPatients[idx] = lp; }
            else { allPatients.push(lp); }
         });
 
-        let patient = allPatients.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"] || "").trim() === targetId);
+        let patient = allPatients.find(p => getValue(p, ["Hospital ID", "હોસ્પિટલ નંબર"]) === targetId);
 
         if(!patient) {
           document.getElementById("loading").innerHTML = t("error_not_found");
@@ -100,32 +119,29 @@
   function renderDetails(p) {
     document.getElementById("loading").style.display = "none";
     
-    // Safely extract keys
-    let name = p["Patient Full Name (દર્દીનું પૂરું નામ)"] || "Unknown";
-    let id = p["Hospital ID  (હોસ્પિટલ નંબર) "] || "Unknown";
-    
-    // Helper to find value by partial key match (case-insensitive)
-    const getValue = (obj, partials) => {
-      for (let key in obj) {
-        for (let part of partials) {
-          if (key.toLowerCase().includes(part.toLowerCase())) {
-            let val = obj[key];
-            if (val && val.trim() !== "") return val;
-          }
-        }
-      }
-      return "Not specified";
-    };
+    // Safely extract keys using the shared getValue helper
+    let name = getValue(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"]);
+    let id = getValue(p, ["Hospital ID", "હોસ્પિટલ નંબર"]);
 
     let bloodGroup = getValue(p, ["Blood Group", "બ્લડ ગ્રુપ"]);
     let accessType = getValue(p, ["Access Type", "એક્સેસ પ્રકાર", "AVF", "Permcath"]);
-    let dialysisDay = getValue(p, ["Dialysis Schedule", "દિવસ", "Shift"]);
+    
+    // Updated schedule fields
+    let dialysisDays = getValue(p, ["Dialysis Days", "Days", "દિવસ"]);
+    let dialysisShift = getValue(p, ["Dialysis Shift", "Shift"]);
     
     // New Form specific fields
     let age = getValue(p, ["Age", "ઉંમર"]);
     let sex = getValue(p, ["Sex", "જાતિ"]);
     let dialysisCenter = getValue(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center"]);
     let homeAddress = getValue(p, ["Address", "સરનામું", "Home"]);
+
+    // New Medical Fields
+    let hemoglobin = getValue(p, ["Hemoglobin", "Hb"]);
+    let epo = getValue(p, ["EPO", "EPO Injection"]);
+    let epoFreq = getValue(p, ["EPO Frequency", "EPO Freq"]);
+    let ironStatus = getValue(p, ["Iron Status", "Iron Inj"]);
+    let ironFreq = getValue(p, ["Iron Frequency", "Iron Freq"]);
 
     // Emergency fields
     let viralStatus = getValue(p, ["Viral Marker", "Viral", "HIV", "HCV", "HBsAg", "વાયરલ"]);
@@ -201,11 +217,31 @@
         </div>
         <div class="detail-item">
           <span class="detail-label" data-i18n="dialysis_day">${t("dialysis_day")}</span>
-          <span class="detail-value">${dialysisDay}</span>
+          <span class="detail-value">${dialysisDays && dialysisDays !== "Not specified" ? dialysisDays : ""} ${dialysisShift && dialysisShift !== "Not specified" ? "(" + dialysisShift + ")" : ""}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label" data-i18n="ayushman_bharat">${t("ayushman_bharat")}</span>
           <span class="detail-value" style="color:var(--success); font-weight:600;">${ayushman}</span>
+        </div>
+      </div>
+
+      <h4 style="margin-top:24px; color:var(--primary);" data-i18n="medical_info">${t("medical_info") || "Detailed Medical Info"}</h4>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="hemoglobin">Hemoglobin (Hb)</span>
+          <span class="detail-value" style="font-weight:600;">${hemoglobin}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="epo_injection">EPO Injection</span>
+          <span class="detail-value">${epo} (${epoFreq})</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="iron_status">Iron Inj. Status</span>
+          <span class="detail-value" style="color:${ironStatus === 'Allowed' ? 'var(--success)' : 'var(--danger)'}; font-weight:600;">${ironStatus}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label" data-i18n="iron_freq">Iron Frequency</span>
+          <span class="detail-value">${ironFreq}</span>
         </div>
       </div>
       

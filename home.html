@@ -53,9 +53,10 @@ Create Patient QR
 Generate All Patient QR
 </a>
 
-<button onclick="clearLocalData()" class="register-btn" style="background-color: var(--danger); margin-top: 10px;" data-i18n="clear_local_data">
-Clear Local Test Patients
-</button>
+<a href="shift-list.html" class="register-btn" data-i18n="btn_shift_list" style="background-color: var(--secondary); margin-top: 10px;">
+View Shift-wise Schedule
+</a>
+
 </div>
 </div>
 
@@ -63,9 +64,28 @@ Clear Local Test Patients
 <!-- HOSPITAL INFO -->
 
 <div class="hospital-header">
-<img src="images/kidney.png" alt="Kidney Indicator" class="section-icon">
+<img src="images/DESLogo_2.png" alt="Diyalisis DES Logo" class="section-icon">
 <h2 data-i18n="dept_h2">Dialysis & Nephrology Department</h2>
 <p class="department" data-i18n="dept_p">Emergency Patient Contact Lookup</p>
+</div>
+
+<!-- CENTER CONTACT CARD -->
+<!-- CENTER CONTACT CARD -->
+<div class="doctor-card" style="border-left-color: var(--primary); margin-top: 24px;">
+<h3>Shree Krishna Hospital, Karamsad</h3>
+
+<p>Dialysis Center</p>
+<p>Anand, Gujarat</p>
+
+<div class="doctor-details">
+<p>📞 +91 2692 230505</p>
+<p>🏥 Shree Krishna Hospital, Karamsad</p>
+</div>
+
+<a class="call-btn" href="tel:+912692230505">
+📞 Call Dialysis Center
+</a>
+
 </div>
 
 <!-- MY ID CARD (ONLY FOR PATIENTS) -->
@@ -126,20 +146,20 @@ Clear Local Test Patients
 
 
 
-<!-- PATIENT SEARCH -->
-
-<div class="search-section">
-
-<h2 data-i18n="lookup_h2">Patient Emergency Lookup</h2>
-
-<input 
-id="searchBox"
-data-i18n="search_ph"
-placeholder="Search Patient Name or Hospital ID (દર્દીનું નામ અથવા હોસ્પિટલ નંબર)"
-oninput="searchPatient()"
->
-
-</div>
+  <!-- PATIENT SEARCH -->
+  <div class="search-section" style="text-align: left; padding: 40px; background: white; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm); border-radius: var(--radius-md);">
+    <h2 style="margin-top: 0; margin-bottom: 24px; font-size: 28px; letter-spacing: -0.02em;" data-i18n="lookup_h2">Patient Emergency Lookup</h2>
+    <div style="position: relative; max-width: 600px;">
+      <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--text-muted); pointer-events: none;">🔍</span>
+      <input 
+        id="searchBox"
+        data-i18n="search_ph"
+        placeholder="Search Patient Name or Hospital ID..."
+        oninput="this.value = this.value.toUpperCase().replace(/\s/g, ''); searchPatient();"
+        style="padding-left: 52px; font-size: 18px; border-radius: 50px; background: #f8fafc; border: 2px solid #e2e8f0; transition: var(--transition); width: 100%;"
+      >
+    </div>
+  </div>
 
 
 <!-- SEARCH RESULTS -->
@@ -204,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // To render it immediately, wait for patients to load then render
         let checkInterval = setInterval(() => {
             if (patients && patients.length > 0) {
-                let p = patients.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "]||"").trim() === loggedInID);
+                let p = patients.find(p => getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]) === loggedInID);
                 if(p) {
                    myIdCardContent.innerHTML = createQRCard(loggedInID);
                 }

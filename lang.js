@@ -31,7 +31,7 @@ const translations = {
     "call_dr_jai": { en: "📞 Call Dr Jainam", gu: "📞 ડૉ. જૈનમને કૉલ કરો" },
     "call_dr_tir": { en: "📞 Call Dr Tirthesh", gu: "📞 ડૉ. તીર્થને કૉલ કરો" },
     "lookup_h2": { en: "Patient Emergency Lookup", gu: "દર્દી ઇમરજન્સી શોધ" },
-    "search_ph": { en: "Search Patient Name or Hospital ID (દર્દીનું નામ અથવા હોસ્પિટલ નંબર)", gu: "દર્દીનું નામ અથવા હોસ્પિટલ નંબર શોધો" },
+    "search_ph": { en: "Search Patient Name or Hospital ID", gu: "દર્દીનું નામ અથવા હોસ્પિટલ નંબર શોધો" },
 
     // script.js / dynamically generated
     "hospital_id_not_found": { en: "Hospital ID not found.", gu: "હોસ્પિટલ આઈડી (ID) મળ્યો નથી." },
@@ -141,10 +141,18 @@ function t(key) {
     return translations[key] ? translations[key][currentLang] : key;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function initLanguage() {
     applyTranslations();
-    
+
     // Initial active button setup
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
     let activeBtn = document.getElementById(`btn-${currentLang}`);
     if (activeBtn) activeBtn.classList.add('active');
-});
+}
+
+// Run immediately if DOM is already parsed, otherwise wait
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initLanguage);
+} else {
+    initLanguage();
+}

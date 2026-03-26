@@ -18,7 +18,7 @@
 <!-- LEFT SIDE: THEME BANNER -->
 <div class="login-banner">
   <div class="banner-content">
-    <img src="images/kidney.png" alt="Kidney Icon" class="banner-icon">
+    <img src="images/DESLogo_2.png" alt="Diyalisis DES Logo" class="banner-icon">
     <h1 data-i18n="banner_h1">Nephrology & Dialysis Care</h1>
     <p data-i18n="banner_p">Rapid emergency contact retrieval and patient management system for Shree Krishna Hospital.</p>
   </div>
@@ -54,7 +54,8 @@
 
     <input 
       id="hospitalId" 
-      placeholder="e.g. 26051B"
+      placeholder="e.g. ABC123"
+      oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')"
     >
 
     <button onclick="login()" class="primary-btn" data-i18n="btn_login">

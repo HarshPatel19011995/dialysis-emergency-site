@@ -40,6 +40,19 @@
       color: var(--primary);
       margin-bottom: 15px;
     }
+
+    /* Check ID specific styles */
+    #checkIdSection input {
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 1px;
+      border: 2px solid var(--primary);
+    }
+    
+    #checkIdSection h3 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -63,11 +76,11 @@
   <div class="container">
 
     <div class="top-actions">
-      <button onclick="window.close()" style="background:var(--secondary);" data-i18n="btn_back">Back / Close</button>
+      <button onclick="window.location.href='home.html'" style="background:var(--secondary);" data-i18n="btn_back">Back / Close</button>
     </div>
 
     <div class="hospital-header">
-      <img src="images/kidney.png" alt="Kidney Indicator" class="section-icon">
+      <img src="images/DESLogo_2.png" alt="Kidney Indicator" class="section-icon">
       <h2 id="pageTitle" data-i18n="register_patient">Register Patient</h2>
       <p class="department" data-i18n="form_instruction">Please fill in the patient details accurately.</p>
     </div>
@@ -77,7 +90,18 @@
       Loading patient data...
     </div>
 
-    <form id="patientForm" onsubmit="submitForm(event)">
+    <!-- CHECK ID SECTION (shown when no ID in URL) -->
+    <div id="checkIdSection" class="form-section" style="text-align: center; padding: 40px 20px; display: none;">
+      <h3 data-i18n="check_id_title">Enter Hospital ID to Start</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;" data-i18n="check_id_prompt">We will check if the patient is already registered.</p>
+      <div style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
+        <input type="text" id="check_id_input" placeholder="e.g. ABC123" style="flex: 1;" oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')">
+        <button type="button" onclick="startCheckID()" class="primary-btn" style="width: auto; margin-top: 0;" data-i18n="btn_check">Check</button>
+      </div>
+      <div id="checkMessage" style="margin-top: 15px; font-weight: 600;"></div>
+    </div>
+
+    <form id="patientForm" onsubmit="submitForm(event)" style="display: none;">
       <div class="form-section">
         <h4 data-i18n="personal_info">Personal Information</h4>
         <div class="form-group">
@@ -110,7 +134,7 @@
         <h4 data-i18n="hospital_details">Hospital Details</h4>
         <div class="form-group">
           <label data-i18n="hospital_id_label">Hospital ID</label>
-          <input type="text" id="f_id" required onblur="checkExistingPatient(this.value)">
+          <input type="text" id="f_id" required oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')">
         </div>
         <div class="form-group">
           <label data-i18n="center">Dialysis Center</label>
@@ -138,40 +162,19 @@
             <input type="hidden" id="f_access">
           </div>
           <div class="form-group" style="flex:1;">
-            <label data-i18n="dialysis_day">Dialysis Schedule/Day</label>
-
-            <div style="background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); padding: 10px;">
-              <div
-                style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; text-transform: uppercase;">
-                Days</div>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;" id="schedule-days">
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Mon"> Mon</label>
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Tue"> Tue</label>
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Wed"> Wed</label>
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Thu"> Thu</label>
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Fri"> Fri</label>
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Sat"> Sat</label>
-                <label style="display: flex; align-items: center; gap: 4px; font-size: 14px;"><input type="checkbox"
-                    value="Sun"> Sun</label>
-              </div>
-
-              <div
-                style="font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; text-transform: uppercase;">
-                Shift</div>
-              <select id="schedule-shift"
-                style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); outline: none;">
-                <option value="">-- No specific shift --</option>
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon</option>
-                <option value="Evening">Evening</option>
-                <option value="Night">Night</option>
-              </select>
+            <label data-i18n="dialysis_day">Dialysis Schedule (Select shifts for each day)</label>
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); padding: 12px; max-height: 220px; overflow-y: auto;" id="schedule-grid">
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <thead>
+                  <tr style="text-align: left; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #f1f5f9;">
+                    <th style="padding-bottom: 8px;">Day</th>
+                    <th style="padding-bottom: 8px;">Shift</th>
+                  </tr>
+                </thead>
+                <tbody id="day-shift-rows">
+                  <!-- Generated by JS -->
+                </tbody>
+              </table>
             </div>
             <input type="hidden" id="f_schedule">
           </div>
@@ -258,6 +261,41 @@
             </table>
           </div>
         </div>
+
+        <!-- NEW MEDICAL FIELDS -->
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <div class="form-group" style="flex:1;">
+            <label data-i18n="hemoglobin">Hemoglobin (Hb) Level</label>
+            <input type="text" id="f_hb" placeholder="e.g. 10.5">
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label data-i18n="epo_injection">EPO Injection Dosage</label>
+            <select id="f_epo">
+              <option value="None">None</option>
+              <option value="2000 IU">2000 IU</option>
+              <option value="4000 IU">4000 IU</option>
+              <option value="10000 IU">10000 IU</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label data-i18n="epo_freq">EPO Frequency</label>
+            <input type="text" id="f_epo_freq" placeholder="e.g. 2/week">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <div class="form-group" style="flex:1;">
+            <label data-i18n="iron_status">Iron Inj. Status</label>
+            <select id="f_iron_status">
+              <option value="Allowed">Allowed</option>
+              <option value="Not Allowed">Not Allowed</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label data-i18n="iron_freq">Iron Frequency</label>
+            <input type="text" id="f_iron_freq" placeholder="e.g. Once weekly">
+          </div>
+        </div>
       </div>
 
       <div class="form-section" style="background: #eff6ff; border-left: 4px solid var(--primary);">
@@ -327,8 +365,8 @@
           <input type="text" id="f_allergy">
         </div>
         <div class="form-group">
-          <label data-i18n="ayushman_bharat">Ayushman Bharat</label>
-          <input type="text" id="f_ayushman">
+            <label data-i18n="ayushman_bharat">Ayushman Bharat (PMJAY)</label>
+            <input id="f_ayushman" placeholder="PMJAY Number" oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')">
         </div>
       </div>
 
@@ -336,7 +374,7 @@
         <h4 data-i18n="emergency_contacts">Emergency Contacts</h4>
         <div class="form-group">
           <label data-i18n="patient_phone">Patient Phone Number</label>
-          <input type="text" id="f_phone">
+          <input type="text" id="f_phone" oninput="this.value = this.value.replace(/\D/g, '')">
         </div>
 
         <p style="font-weight:bold; margin-bottom:5px;" data-i18n="emergency_contact">Emergency Contact 1</p>
@@ -360,7 +398,7 @@
             </select>
           </div>
           <div class="form-group" style="flex:1;">
-            <input type="text" id="f_c1_phone" placeholder="Phone">
+            <input type="text" id="f_c1_phone" placeholder="Phone" oninput="this.value = this.value.replace(/\D/g, '')">
           </div>
         </div>
 
@@ -385,7 +423,7 @@
             </select>
           </div>
           <div class="form-group" style="flex:1;">
-            <input type="text" id="f_c2_phone" placeholder="Phone">
+            <input type="text" id="f_c2_phone" placeholder="Phone" oninput="this.value = this.value.replace(/\D/g, '')">
           </div>
         </div>
       </div>
@@ -400,6 +438,8 @@
     const appsScriptURL = "https://script.google.com/macros/s/AKfycbyFWxJcEr3waENhJSie2DvYYRLnUxw6xz2r4PagYxNRVD1_jlb8NiKfC90LatL8t5fv/exec"; // Paste your Google Apps Script Web App URL here
 
     document.addEventListener("DOMContentLoaded", () => {
+      generateScheduleGrid();
+      
       let params = new URLSearchParams(window.location.search);
       let targetId = params.get("id");
 
@@ -411,28 +451,117 @@
           document.getElementById("pageTitle").innerHTML = "Edit Patient";
         }
         loadPatientData(targetId);
+      } else {
+        // No ID in URL - show the "Check ID First" section
+        document.getElementById("checkIdSection").style.display = "block";
       }
     });
 
-    function loadPatientData(targetId) {
+    const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    function generateScheduleGrid() {
+      const container = document.getElementById("day-shift-rows");
+      container.innerHTML = "";
+      DAYS_OF_WEEK.forEach(day => {
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px solid #f8fafc";
+        tr.innerHTML = `
+          <td style="padding: 10px 0;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 500;">
+              <input type="checkbox" class="day-check" value="${day}" onchange="toggleShift('${day}')"> ${day}
+            </label>
+          </td>
+          <td style="padding: 10px 0;">
+            <select id="shift-${day}" disabled style="padding: 4px 8px; font-size: 13px; width: 100%; border: 1px solid #e2e8f0; border-radius: 4px;">
+              <option value="Morning">Morning</option>
+              <option value="Afternoon">Afternoon</option>
+              <option value="Evening">Evening</option>
+              <option value="Night">Night</option>
+            </select>
+          </td>
+        `;
+        container.appendChild(tr);
+      });
+    }
+
+    function toggleShift(day) {
+      const checkbox = document.querySelector(`.day-check[value="${day}"]`);
+      const select = document.getElementById(`shift-${day}`);
+      select.disabled = !checkbox.checked;
+      if (checkbox.checked) select.focus();
+    }
+
+
+
+    function startCheckID() {
+      let id = document.getElementById("check_id_input").value.trim();
+      if (!id) {
+        alert("Please enter a Hospital ID");
+        return;
+      }
+      
+      let btn = document.querySelector('#checkIdSection button');
+      let origText = btn.innerHTML;
+      btn.innerHTML = "Checking...";
+      btn.disabled = true;
+      
+      loadPatientData(id, true);
+    }
+
+      const getSafeVal = (obj, partials) => {
+          const partsLow = partials.map(p => p.toLowerCase().trim());
+          // Exact match first
+          for (let key in obj) {
+              let kLow = key.toLowerCase().trim();
+              if (partsLow.includes(kLow)) {
+                  let val = obj[key];
+                  if (val !== undefined && val !== null && String(val).trim() !== "") return String(val).trim();
+              }
+          }
+          // Includes match fallback
+          for (let key in obj) {
+              let kLow = key.toLowerCase();
+              for (let pLow of partsLow) {
+                  if (kLow.includes(pLow)) {
+                      let val = obj[key];
+                      if (val !== undefined && val !== null && String(val).trim() !== "") return String(val).trim();
+                  }
+              }
+          }
+          return "";
+      };
+
+    function loadPatientData(targetId, isManualCheck = false) {
       document.getElementById("loading").style.display = "block";
       document.getElementById("patientForm").style.display = "none";
+      if(isManualCheck) document.getElementById("checkIdSection").style.display = "none";
 
       fetch(sheetURL)
         .then(res => res.json())
         .then(data => {
           let localPatients = JSON.parse(localStorage.getItem("localPatients") || "[]");
           let allPatients = [...data];
+          
           localPatients.forEach(lp => {
-            let idx = allPatients.findIndex(p => (p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"]) === (lp["Hospital ID  (હોસ્પિટલ નંબર) "] || lp["Hospital ID"]));
+            let hospitalId = getSafeVal(lp, ["Hospital ID", "હોસ્પિટલ નંબર"]);
+            if (!hospitalId) return;
+
+            let idx = allPatients.findIndex(p => getSafeVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]) === hospitalId);
             if (idx > -1) { allPatients[idx] = lp; }
             else { allPatients.push(lp); }
           });
 
-          let patient = allPatients.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"] || "").trim() === targetId);
+          patients = allPatients; // Update global patients list if exist
+
+          let patient = allPatients.find(p => getSafeVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]) === targetId);
 
           if (!patient) {
-            document.getElementById("loading").innerHTML = t("error_not_found");
+            if (isManualCheck) {
+              document.getElementById("loading").style.display = "none";
+              document.getElementById("patientForm").style.display = "block";
+              document.getElementById("f_id").value = targetId;
+            } else {
+              document.getElementById("loading").innerHTML = t("error_not_found") || "Patient not found.";
+            }
             return;
           }
 
@@ -441,91 +570,157 @@
           document.getElementById("patientForm").style.display = "block";
         })
         .catch(err => {
-          document.getElementById("loading").innerHTML = t("error_network");
-          console.error(err);
+          document.getElementById("loading").innerHTML = (t && t("error_network")) || "Network error loading data. Please try again.";
+          if(isManualCheck) {
+            document.getElementById("checkIdSection").style.display = "block";
+            let btn = document.querySelector('#checkIdSection button');
+            if(btn) {
+              btn.innerHTML = "Check";
+              btn.disabled = false;
+            }
+          }
+          console.error("Load Error:", err);
         });
     }
 
-    function populateForm(p) {
-      const getValue = (obj, partials) => {
-        for (let key in obj) {
-          for (let part of partials) {
-            if (key.toLowerCase().includes(part.toLowerCase())) {
-              let val = obj[key];
-              if (val && val.trim() !== "") return val;
-            }
+    const safeSetSelect = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el || !val) return;
+        const v = String(val).trim().toLowerCase();
+
+        console.log(`Setting ${id} to ${val} (normalized: ${v})`);
+        // Pass 1: exact match on value or text
+        for (let i = 0; i < el.options.length; i++) {
+          let optVal = el.options[i].value.toLowerCase().trim();
+          let optText = el.options[i].text.toLowerCase().trim();
+          if (optVal === v || optText === v) {
+            el.selectedIndex = i;
+            return;
           }
         }
-        return "";
-      };
+        // Pass 2: partial match (skip empty options to avoid false matches)
+        for (let i = 0; i < el.options.length; i++) {
+          let optVal = el.options[i].value.toLowerCase().trim();
+          let optText = el.options[i].text.toLowerCase().trim();
+          if (optVal && (v.includes(optVal) || optVal.includes(v) || v.includes(optText) || optText.includes(v))) {
+            el.selectedIndex = i;
+            return;
+          }
+        }
+    };
 
-      document.getElementById("f_name").value = p["Patient Full Name (દર્દીનું પૂરું નામ)"] || "";
-      document.getElementById("f_id").value = p["Hospital ID  (હોસ્પિટલ નંબર) "] || "";
-      document.getElementById("f_age").value = getValue(p, ["Age", "ઉંમર"]);
-      document.getElementById("f_sex").value = getValue(p, ["Sex", "જાતિ"]);
-      document.getElementById("f_address").value = getValue(p, ["Address", "સરનામું", "Home"]);
-      document.getElementById("f_center").value = getValue(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center"]);
+    function populateForm(p) {
+      console.log("Populating form with patient:", p);
 
-      let accessData = getValue(p, ["Access Type", "એક્સેસ પ્રકાર", "AVF", "Permcath"]);
+      // Basic Info
+      document.getElementById("f_name").value = getSafeVal(p, ["Patient Full Name", "નામ"]);
+      document.getElementById("f_id").value = getSafeVal(p, ["Hospital ID", "નંબર"]);
+      document.getElementById("f_age").value = getSafeVal(p, ["Age", "ઉંમર"]);
+      safeSetSelect("f_sex", getSafeVal(p, ["Sex", "જાતિ"]));
+      document.getElementById("f_address").value = getSafeVal(p, ["Address", "સરનામું", "Home"]);
+      document.getElementById("f_center").value = getSafeVal(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center"]);
+
+      // Access Type mapping
+      let accessData = getSafeVal(p, ["Access Type", "એક્સેસ પ્રકાર", "AVF", "Permcath"]);
       document.getElementById("f_access").value = accessData;
       let accessOptions = ["Left Arm Fistula", "Right Arm Fistula", "DLC – Double Lumen Catheter", "Permcath / Tunnel Catheter", "AV Graft", "Pump Cath"];
-
-      // Normalize string matching
       let foundPreset = accessOptions.find(opt => accessData && opt.toLowerCase().includes(accessData.toLowerCase().trim()));
       if (foundPreset) {
         document.getElementById("access-preset").value = foundPreset;
+        document.getElementById("access-custom").style.display = "none";
       } else if (accessData && accessData !== "Not specified" && accessData !== "માહિતી નથી") {
         document.getElementById("access-preset").value = "Other";
         document.getElementById("access-custom").style.display = "block";
         document.getElementById("access-custom").value = accessData;
       } else {
         document.getElementById("access-preset").value = "";
+        document.getElementById("access-custom").style.display = "none";
       }
 
-      let schedData = getValue(p, ["Dialysis Schedule", "દિવસ", "Shift"]);
+      // Schedule Grid mapping
+      let schedData = getSafeVal(p, ["Dialysis Schedule", "ડાયાલિસિસ શેડ્યૂલ", "Schedule", "Days", "Shift"]);
       document.getElementById("f_schedule").value = schedData;
-      if (schedData && schedData !== "Not specified" && schedData !== "માહિતી નથી") {
-        let scLow = schedData.toLowerCase();
-        let daysBoxes = document.querySelectorAll('#schedule-days input[type="checkbox"]');
-        daysBoxes.forEach(b => {
-          b.checked = scLow.includes(b.value.toLowerCase());
-        });
-        if (scLow.includes("morn")) document.getElementById("schedule-shift").value = "Morning";
-        else if (scLow.includes("after") || scLow.includes("noon")) document.getElementById("schedule-shift").value = "Afternoon";
-        else if (scLow.includes("even")) document.getElementById("schedule-shift").value = "Evening";
-        else if (scLow.includes("night")) document.getElementById("schedule-shift").value = "Night";
+      if (schedData) {
+        if (schedData.includes(":")) {
+          let parts = schedData.split(",").map(s => s.trim());
+          parts.forEach(part => {
+             let splitPart = part.split(":");
+             if (splitPart.length >= 2) {
+               let dayStr = splitPart[0].trim().toLowerCase();
+               let shiftVal = splitPart[1].trim();
+               
+               // Find the day check by comparing case-insensitively
+               let allChecks = document.querySelectorAll(".day-check");
+               let dayCheck = Array.from(allChecks).find(c => c.value.toLowerCase() === dayStr);
+               
+               if (dayCheck) {
+                  let day = dayCheck.value; // Get the actual correctly-cased day (e.g. "Mon")
+                  let shiftSelect = document.getElementById(`shift-${day}`);
+                  dayCheck.checked = true;
+                  if (shiftSelect) {
+                    shiftSelect.disabled = false;
+                    safeSetSelect(`shift-${day}`, shiftVal);
+                  }
+               }
+             }
+          });
+        } else {
+          // Fallback for old simple list format (e.g. "Mon, Wed, Fri - Morning")
+          let scLow = schedData.toLowerCase();
+          DAYS_OF_WEEK.forEach(day => {
+            if (new RegExp(`\\b${day.toLowerCase()}\\b`).test(scLow)) {
+              let dayCheck = document.querySelector(`.day-check[value="${day}"]`);
+              let shiftSelect = document.getElementById(`shift-${day}`);
+              if (dayCheck && shiftSelect) {
+                dayCheck.checked = true;
+                shiftSelect.disabled = false;
+                // Guess shift from string
+                if (scLow.includes("morn")) safeSetSelect(`shift-${day}`, "Morning");
+                else if (scLow.includes("after") || scLow.includes("noon")) safeSetSelect(`shift-${day}`, "Afternoon");
+                else if (scLow.includes("even")) safeSetSelect(`shift-${day}`, "Evening");
+                else if (scLow.includes("night")) safeSetSelect(`shift-${day}`, "Night");
+              }
+            }
+          });
+        }
       }
 
-      // Parse Primary Diagnosis
-      let diagStr = getValue(p, ["Diagnosis", "CKD", "ESRD", "HTN", "નિદાન"]);
+      // Medical History & Blood Group
+      let diagStr = getSafeVal(p, ["Diagnosis", "CKD", "ESRD", "HTN", "નિદાન"]);
       selectedDiagnoses = diagStr ? diagStr.split(",").map(s => s.trim()).filter(Boolean) : [];
-      renderDiagnosisTags();
+      if (typeof renderDiagnosisTags === "function") renderDiagnosisTags();
+      document.getElementById("f_diagnosis").value = diagStr;
 
-      document.getElementById("f_blood_group").value = getValue(p, ["Blood Group", "બ્લડ ગ્રુપ"]);
-      document.getElementById("f_weight").value = getValue(p, ["Dry Weight", "Target Weight"]);
+      safeSetSelect("f_blood_group", getSafeVal(p, ["Blood Group", "બ્લડ ગ્રુપ"]));
+      document.getElementById("f_weight").value = getSafeVal(p, ["Dry Weight", "Weight"]);
 
-      let viralData = getValue(p, ["Viral Marker", "Viral", "HIV", "HCV", "HBsAg", "વાયરલ"]).toLowerCase();
-      document.getElementById("v_hiv").checked = viralData.includes("hiv") && !viralData.includes("hiv negative");
-      document.getElementById("v_hcv").checked = viralData.includes("hcv") && !viralData.includes("hcv negative");
-      document.getElementById("v_hbsag").checked = viralData.includes("hbsag") && !viralData.includes("hbsag negative");
+      // Viral Markers
+      let viralData = getSafeVal(p, ["Viral Marker", "Viral", "HIV", "વાયરલ"]).toLowerCase();
+      document.getElementById("v_hiv").checked = viralData.includes("hiv positive") || (viralData.includes("hiv") && !viralData.includes("negative"));
+      document.getElementById("v_hcv").checked = viralData.includes("hcv positive") || (viralData.includes("hcv") && !viralData.includes("negative"));
+      document.getElementById("v_hbsag").checked = viralData.includes("hbsag positive") || (viralData.includes("hbsag") && !viralData.includes("negative"));
 
-      document.getElementById("f_diabetes").value = getValue(p, ["Diabetic", "Diabetes", "ડાયાબિટીસ", "મધુપ્રમેહ"]) || "No";
-      document.getElementById("f_bp").value = getValue(p, ["BP", "Blood Pressure", "બ્લડ પ્રેશર"]) || "Normal";
-      document.getElementById("f_cardiac").value = getValue(p, ["Cardiac", "Heart", "હૃદય રોગ"]) || "No";
-      document.getElementById("f_stroke").value = getValue(p, ["Stroke", "Neuro", "Neurological", "સ્ટ્રોક"]) || "No";
+      // Medical & Health Conditions
+      document.getElementById("f_hb").value = getSafeVal(p, ["Hemoglobin", "Hb"]);
+      safeSetSelect("f_epo", getSafeVal(p, ["EPO Injection", "ઈપીઓ"]));
+      document.getElementById("f_epo_freq").value = getSafeVal(p, ["EPO Frequency", "ઈપીઓ વાર"]);
+      safeSetSelect("f_iron_status", getSafeVal(p, ["Iron Status", "આયર્ન"]));
+      document.getElementById("f_iron_freq").value = getSafeVal(p, ["Iron Frequency", "આયર્ન વાર"]);
+      safeSetSelect("f_diabetes", getSafeVal(p, ["Diabetic", "Diabetes", "ડાયાબિટીસ"]));
+      safeSetSelect("f_bp", getSafeVal(p, ["BP", "Blood Pressure", "બીપી"]));
+      safeSetSelect("f_cardiac", getSafeVal(p, ["Cardiac", "Heart", "હૃદય"]));
+      safeSetSelect("f_stroke", getSafeVal(p, ["Stroke", "Neuro", "સ્ટ્રોક"]));
+      document.getElementById("f_allergy").value = getSafeVal(p, ["Allergy", "એલર્જી"]);
+      document.getElementById("f_ayushman").value = getSafeVal(p, ["Ayushman Bharat", "PMJAY", "આયુષ્માન"]);
 
-      document.getElementById("f_allergy").value = getValue(p, ["Allergy", "Allergies", "એલર્જી"]);
-      document.getElementById("f_ayushman").value = getValue(p, ["Ayushman Bharat", "PMJAY", "આયુષ્માન"]);
-
-      document.getElementById("f_phone").value = getValue(p, ["Mobile Number", "Phone Number", "મોબાઇલ નંબર"]);
-
-      document.getElementById("f_c1_name").value = getValue(p, ["Contact Name 1", "Emergency Contact", "નામ"]);
-      document.getElementById("f_c1_rel").value = getValue(p, ["Relation 1", "સંબંધ"]);
-      document.getElementById("f_c1_phone").value = getValue(p, ["Phone Number 1"]);
-
-      document.getElementById("f_c2_name").value = getValue(p, ["Contact Name 2"]);
-      document.getElementById("f_c2_rel").value = getValue(p, ["Relation 2"]);
-      document.getElementById("f_c2_phone").value = getValue(p, ["Phone Number 2", "બીજો નંબર"]);
+      // Contacts
+      document.getElementById("f_phone").value = getSafeVal(p, ["Mobile Number", "Patient Phone", "મોબાઇલ"]);
+      document.getElementById("f_c1_name").value = getSafeVal(p, ["Contact Name 1", "ઇમરજન્સી સંપર્ક ૧"]);
+      safeSetSelect("f_c1_rel", getSafeVal(p, ["Relation 1", "સંબંધ ૧"]));
+      document.getElementById("f_c1_phone").value = getSafeVal(p, ["Phone Number 1", "ફોન ૧"]);
+      document.getElementById("f_c2_name").value = getSafeVal(p, ["Contact Name 2", "ઇમરજન્સી સંપર્ક ૨"]);
+      safeSetSelect("f_c2_rel", getSafeVal(p, ["Relation 2", "સંબંધ ૨"]));
+      document.getElementById("f_c2_phone").value = getSafeVal(p, ["Phone Number 2", "ફોન ૨"]);
     }
 
     function submitForm(e) {
@@ -541,23 +736,33 @@
       let finalAccess = accessPreset === "Other" ? accessCustom : accessPreset;
       document.getElementById("f_access").value = finalAccess;
 
-      let schedDays = Array.from(document.querySelectorAll('#schedule-days input[type="checkbox"]:checked')).map(b => b.value).join(", ");
-      let schedShift = document.getElementById("schedule-shift").value;
-      let finalSched = [schedDays, schedShift].filter(Boolean).join(" - ");
-      document.getElementById("f_schedule").value = finalSched;
+      let selectedShifts = [];
+      DAYS_OF_WEEK.forEach(day => {
+        let dayCheck = document.querySelector(`.day-check[value="${day}"]`);
+        let shiftSelect = document.getElementById(`shift-${day}`);
+        if (dayCheck && dayCheck.checked) {
+          selectedShifts.push(`${day}: ${shiftSelect.value}`);
+        }
+      });
+      let finalSchedule = selectedShifts.join(", ");
 
       let newPatient = {
-        "Patient Full Name (દર્દીનું પૂરું નામ)": document.getElementById("f_name").value,
+        "Patient Full Name": document.getElementById("f_name").value,
         "Hospital ID": document.getElementById("f_id").value,
         "Age": document.getElementById("f_age").value,
         "Sex": document.getElementById("f_sex").value,
         "Dialysis center": document.getElementById("f_center").value,
         "Access Type": document.getElementById("f_access").value,
-        "Dialysis Schedule": document.getElementById("f_schedule").value,
+        "Dialysis Schedule": finalSchedule,
         "Diagnosis": document.getElementById("f_diagnosis").value,
         "Blood Group": document.getElementById("f_blood_group").value,
         "Dry Weight": document.getElementById("f_weight").value,
         "Viral Marker": viralStatusArr.length > 0 ? viralStatusArr.join(", ") : "Negative",
+        "Hemoglobin (Hb)": document.getElementById("f_hb").value,
+        "EPO Injection": document.getElementById("f_epo").value,
+        "EPO Frequency": document.getElementById("f_epo_freq").value,
+        "Iron Status": document.getElementById("f_iron_status").value,
+        "Iron Frequency": document.getElementById("f_iron_freq").value,
         "Mobile Number": document.getElementById("f_phone").value,
         "Contact Name 1": document.getElementById("f_c1_name").value,
         "Relation 1": document.getElementById("f_c1_rel").value,
@@ -601,6 +806,10 @@
         .then(data => {
             if (data.status === "success") {
                 alert("Patient Data saved to Google Sheets successfully!");
+                // Clear local storage for this patient on success
+                let localPatients = JSON.parse(localStorage.getItem("localPatients") || "[]");
+                let updatedLocal = localPatients.filter(lp => getSafeVal(lp, ["Hospital ID", "નંબર"]) !== newPatient["Hospital ID"]);
+                localStorage.setItem("localPatients", JSON.stringify(updatedLocal));
             } else {
                 alert("Google Apps Script Error: " + data.message);
             }
@@ -702,45 +911,6 @@
       renderDiagnosisTags();
     }
 
-    function checkExistingPatient(id) {
-      if (!id || id.trim() === "") return;
-      id = id.trim();
-
-      // Check if we are already editing
-      let params = new URLSearchParams(window.location.search);
-      if (params.get("id")) return; // Don't prompt if we were already loaded via URL ID
-
-      let localPatients = JSON.parse(localStorage.getItem("localPatients") || "[]");
-      let lp = localPatients.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"] || "").trim() === id);
-      if (lp) {
-        if (confirm("Data found for this Hospital ID locally. Do you want to load it for editing?")) {
-          populateForm(lp);
-          return;
-        }
-      }
-
-      let btnMsg = document.getElementById("loading");
-      let origMsg = btnMsg.innerHTML;
-      btnMsg.innerHTML = "Checking database for this ID...";
-      btnMsg.style.display = "block";
-
-      fetch(sheetURL).then(res => res.json()).then(data => {
-        let p = data.find(p => String(p["Hospital ID  (હોસ્પિટલ નંબર) "] || p["Hospital ID"] || "").trim() === id);
-        if (p) {
-          btnMsg.style.display = "none";
-          if (confirm("Data found for this Hospital ID in the database. Do you want to load it for editing?")) {
-            populateForm(p);
-          }
-        } else {
-          btnMsg.style.display = "none";
-        }
-        btnMsg.innerHTML = origMsg;
-      }).catch(e => {
-        btnMsg.style.display = "none";
-        btnMsg.innerHTML = origMsg;
-        console.log(e);
-      });
-    }
   </script>
 
 </body>

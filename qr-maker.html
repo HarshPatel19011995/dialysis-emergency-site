@@ -10,6 +10,9 @@
 <body>
 
 <div class="container">
+  <div style="margin-bottom: 20px;">
+    <button onclick="window.location.href='home.html'" style="background:var(--secondary);">Back</button>
+  </div>
 
 <h2>Dialysis Patient QR Generator</h2>
 
@@ -17,7 +20,8 @@
 
 <input 
 id="qrHospitalId"
-placeholder="Hospital ID (Example: 26051B)"
+placeholder="Hospital ID (Example: ABC123)"
+oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')"
 >
 
 <button onclick="generateCustomQR()">

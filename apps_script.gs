@@ -8,8 +8,9 @@ function doPost(e) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     const data = JSON.parse(e.postData.contents);
     
-    // Convert new data into variables
-    const hospitalId = data["Hospital ID"];
+    // Find hospitalId in the incoming JSON keys
+    let hospitalIdKey = Object.keys(data).find(k => k.toLowerCase().includes("hospital id") || k.includes("હોસ્પિટલ નંબર"));
+    const hospitalId = data[hospitalIdKey];
     
     // We assume the first row has headers
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
@@ -23,7 +24,10 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    const allData = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
+    let allData = [];
+    if (sheet.getLastRow() > 1) {
+      allData = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
+    }
     let existingRowIndex = -1;
     
     for (let i = 0; i < allData.length; i++) {
@@ -35,12 +39,19 @@ function doPost(e) {
 
     let newRowData = [];
     headers.forEach((header, index) => {
-      // Find matching key in the data payload
-      let key = Object.keys(data).find(k => header.includes(k) || k.includes(header));
-      if (key && data[key]) {
+      let headerStr = header.toString().trim();
+      let headerClean = headerStr.toLowerCase()
+        .replace(/[^a-z0-9]/g, ""); // Remove non-alphanumeric for comparison
+      
+      let key = Object.keys(data).find(k => {
+        let kClean = k.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+        return headerClean === kClean || headerClean.includes(kClean) || kClean.includes(headerClean);
+      });
+
+      if (key && data[key] !== undefined && data[key] !== null) {
         newRowData[index] = data[key];
       } else if (existingRowIndex > -1) {
-        // Keep existing data for columns not provided
+        // Keep existing data for columns not provided in the update
         newRowData[index] = sheet.getRange(existingRowIndex, index + 1).getValue();
       } else {
         newRowData[index] = "";
