@@ -148,6 +148,15 @@
     let dryWeight = getValue(p, ["Dry Weight", "Target Weight"]);
     let ayushman = getValue(p, ["Ayushman Bharat", "PMJAY", "આયુષ્માન"]);
     
+    // Emergency Contact Values
+    let patientPhone = getValue(p, ["Mobile Number", "મોબાઇલ નંબર"]);
+    let contact1 = getValue(p, ["Contact Name 1", "Emergency Contact", "નામ"]);
+    let relation1 = getValue(p, ["Relation 1", "સંબંધ"]);
+    let phone1 = getValue(p, ["Phone Number 1", "ફોન ૧"]);
+    let contact2 = getValue(p, ["Contact Name 2", "બીજો સંપર્ક"]);
+    let relation2 = getValue(p, ["Relation 2", "બીજો સંબંધ"]);
+    let phone2 = getValue(p, ["Phone Number 2", "ફોન ૨"]);
+    
     // Additional health factors
     let diagnosis = getValue(p, ["Diagnosis", "CKD", "ESRD", "HTN", "નિદાન"]);
     let allergy = getValue(p, ["Allergy", "Allergies", "એલર્જી"]);
@@ -268,6 +277,45 @@
       <h4 style="margin-top:24px; color:var(--primary);" data-i18n="allergy">${t("allergy")}</h4>
       <div style="margin-top:16px; background:#fff7ed; padding:12px; border-left:4px solid var(--danger); border-radius:4px;">
         <span style="font-weight:600; color:#9a3412;">${allergy}</span>
+      </div>
+
+      <hr style="border:0; border-top:1px solid #e2e8f0; margin: 24px 0;">
+      <h4 style="color:var(--primary);" data-i18n="emergency_contacts">${t("emergency_contacts") || "Emergency Contacts"}</h4>
+      
+      <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px;">
+        
+        <!-- Patient Phone -->
+        ${patientPhone !== "Not specified" ? `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block;" data-i18n="patient_phone">${t("patient_phone")}</span>
+            <span style="font-weight: 600; font-size: 16px;">${patientPhone}</span>
+          </div>
+          <a href="tel:${patientPhone}" class="call-btn" style="width: auto; padding: 8px 16px; margin: 0; font-size: 14px;">📞 CALL</a>
+        </div>
+        ` : ''}
+
+        <!-- Contact 1 -->
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: var(--shadow-sm);">
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px;" data-i18n="emergency_contact">${t("emergency_contact")}</span>
+          <p style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">${contact1}</p>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 12px;">${relation1}</p>
+          ${phone1 !== "Not specified" ? `
+            <a href="tel:${phone1}" class="call-btn" style="padding: 12px; display: block; text-align: center;">📞 ${t("call_now")} (${phone1})</a>
+          ` : '<p style="color: var(--danger); font-size: 14px;">No phone number provided</p>'}
+        </div>
+
+        <!-- Contact 2 -->
+        ${contact2 !== "Not specified" || phone2 !== "Not specified" ? `
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: var(--shadow-sm);">
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px;" data-i18n="second_contact">${t("second_contact")}</span>
+          <p style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">${contact2}</p>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 12px;">${relation2}</p>
+          ${phone2 !== "Not specified" ? `
+            <a href="tel:${phone2}" class="call-btn second" style="padding: 12px; display: block; text-align: center;">📞 ${t("call_second")} (${phone2})</a>
+          ` : '<p style="color: var(--danger); font-size: 14px;">No phone number provided</p>'}
+        </div>
+        ` : ''}
       </div>
 
       <hr style="border:0; border-top:1px solid #e2e8f0; margin: 24px 0;">

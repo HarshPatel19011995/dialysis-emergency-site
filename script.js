@@ -267,7 +267,8 @@ let results=patients.filter(p=>{
 
 let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"]).toLowerCase()
 let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"]).toLowerCase()
-let phone=getVal(p, ["Mobile Number", "Phone Number", "મોબાઇલ નંબર", "ફોન નંબર"]).toLowerCase()
+let phone=getVal(p, ["Phone Number 1", "Phone Number 2", "મોબાઇલ નંબર", "ફોન નંબર"]).toLowerCase()
+//let phone=getVal(p, ["Mobile Number", "Phone Number", "મોબાઇલ નંબર", "ફોન નંબર"]).toLowerCase()
 
 return id.includes(query)||name.includes(query)||phone.includes(query)
 
@@ -292,53 +293,56 @@ let html=""
 
 results.forEach(p=>{
 
-let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"])
-let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"])
-let phone1=getVal(p, ["Mobile Number", "Phone Number 1", "મોબાઇલ નંબર"])
-let contact1=getVal(p, ["Contact Name 1", "Emergency Contact", "નામ"])
-let relation1=getVal(p, ["Relation 1", "સંબંધ"])
+    let name=getVal(p, ["Patient Full Name", "દર્દીનું પૂરું નામ"])
+    let id=getVal(p, ["Hospital ID", "હોસ્પિટલ નંબર"])
+    
+    // Correctly separate types of phone numbers
+    let patientPhone = getVal(p, ["Mobile Number", "મોબાઇલ નંબર"])
+    
+    let contact1 = getVal(p, ["Contact Name 1", "Emergency Contact", "નામ"])
+    let relation1 = getVal(p, ["Relation 1", "સંબંધ"])
+    let phone1 = getVal(p, ["Phone Number 1", "ફોન ૧"])
+    
+    let contact2 = getVal(p, ["Contact Name 2", "બીજો સંપર્ક"])
+    let relation2 = getVal(p, ["Relation 2", "બીજો સંબંધ"])
+    let phone2 = getVal(p, ["Phone Number 2", "ફોન ૨"])
 
-html+=`
+    html+=`
+    <div class="card" style="border-left: 6px solid var(--primary);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <h3 style="margin:0;">${highlight(name,query)}</h3>
+            <span style="background: rgba(37,99,235,0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">ACTIVE</span>
+        </div>
 
-<div class="card" style="border-left: 6px solid var(--primary);">
-<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-  <h3 style="margin:0;">${highlight(name,query)}</h3>
-  <span style="background: rgba(37,99,235,0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">ACTIVE</span>
-</div>
+        <p style="margin-bottom: 12px;"><b>${t("hospital_id_label")}</b> <span style="font-family: monospace; font-size: 16px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">${highlight(id,query)}</span></p>
 
-<p style="margin-bottom: 20px;"><b>${t("hospital_id_label")}</b> <span style="font-family: monospace; font-size: 16px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">${highlight(id,query)}</span></p>
+        ${patientPhone ? `
+        <div style="margin-bottom: 16px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">${t("patient_phone")}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600;">${patientPhone}</span>
+                <a href="tel:${patientPhone}" style="color: var(--primary); text-decoration: none; font-size: 14px; font-weight: bold;">📞 CALL</a>
+            </div>
+        </div>
+        ` : ''}
 
-<div class="contact-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
-<div class="contact-block" style="margin-top: 0; background: #fff; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-<p style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">${t("emergency_contact")}</p>
-<p style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">${contact1} (${relation1})</p>
-<a class="call-btn" href="tel:${phone1}" style="padding: 12px;">${t("call_now")}</a>
-</div>
-`
+        <div class="contact-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+            <div class="contact-block" style="margin-top: 0; background: #fff; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm); padding: 12px; border-radius: 8px;">
+                <p style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">${t("emergency_contact")}</p>
+                <p style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">${contact1 || 'Not specified'} ${relation1 ? `(${relation1})` : ''}</p>
+                ${phone1 ? `<a class="call-btn" href="tel:${phone1}" style="padding: 12px;">${t("call_now")}</a>` : `<p style="color: var(--text-muted); font-style: italic;">No phone provided</p>`}
+            </div>
 
-let phone2 = getVal(p, ["Phone Number 2", "બીજો નંબર"]);
-if(phone2){
-    let contact2 = getVal(p, ["Contact Name 2"]);
-    let relation2 = getVal(p, ["Relation 2"]);
-html+=`
+            ${phone2 ? `
+            <div class="contact-block" style="background: #fff; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm); padding: 12px; border-radius: 8px;">
+                <p style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">${t("second_contact")}</p>
+                <p style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">${contact2 || 'Not specified'} ${relation2 ? `(${relation2})` : ''}</p>
+                <a class="call-btn second" href="tel:${phone2}">${t("call_second")}</a>
+            </div>
+            ` : ''}
+        </div>
+    `
 
-<div class="contact-block">
-
-<p><b>${t("second_contact")}</b></p>
-
-<p>
-${contact2}
-(${relation2})
-</p>
-
-<a class="call-btn second" href="tel:${phone2}">
-${t("call_second")}
-</a>
-
-</div>
-
-`
-}
 
 
 /* VIEW DETAILS BUTTON */

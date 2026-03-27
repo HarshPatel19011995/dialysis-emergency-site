@@ -39,10 +39,10 @@ const translations = {
     "invalid_staff_id": { en: "Invalid Staff ID.", gu: "અમાન્ય સ્ટાફ આઈડી (ID)." },
     "register_patient": { en: "Register Patient", gu: "દર્દીની નોંધણી કરો" },
     "hospital_id_label": { en: "Hospital ID:", gu: "હોસ્પિટલ આઈડી:" },
-    "emergency_contact": { en: "Emergency Contact", gu: "ઇમરજન્સી સંપર્ક" },
-    "second_contact": { en: "Second Contact", gu: "બીજો સંપર્ક" },
-    "call_now": { en: "📞 CALL NOW", gu: "📞 હમણાં કૉલ કરો" },
-    "call_second": { en: "📞 CALL SECOND", gu: "📞 બીજા નંબર પર કૉલ કરો" },
+    "emergency_contact": { en: "Emergency Contact 1", gu: "ઇમરજન્સી સંપર્ક ૧" },
+    "second_contact": { en: "Emergency Contact 2", gu: "બીજો સંપર્ક (ઇમરજન્સી ૨)" },
+    "call_now": { en: "📞 CALL CONTACT 1", gu: "📞 સંપર્ક ૧ ને કૉલ કરો" },
+    "call_second": { en: "📞 CALL CONTACT 2", gu: "📞 સંપર્ક ૨ ને કૉલ કરો" },
     "view_details": { en: "🔍 View Full Health Details", gu: "🔍 સંપૂર્ણ આરોગ્ય વિગતો જુઓ" },
     "qr_title": { en: "Dialysis Emergency QR", gu: "ડાયાલિસિસ ઇમરજન્સી QR" },
     "qr_scan_inst": { en: "Scan to view emergency contact", gu: "ઇમરજન્સી સંપર્ક જોવા માટે સ્કેન કરો" },
@@ -68,7 +68,7 @@ const translations = {
     "dialysis_day": { en: "Dialysis Schedule/Day", gu: "ડાયાલિસિસ શેડ્યૂલ/દિવસ" },
     
     // Diagnosis
-    "primary_diagnosis": { en: "Primary Diagnosis (CKD/ESRD/HTN)", gu: "પ્રાથમિક નિદાન (CKD/ESRD/HTN)" },
+    "primary_diagnosis": { en: "Primary Diagnosis (CKD/ESRD/HTN/DM)", gu: "પ્રાથમિક નિદાન (CKD/ESRD/HTN/DM)" },
     
     // New health conditions
     "allergy": { en: "Allergies", gu: "એલર્જી" },
