@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title data-i18n="title_register">Register / Edit Patient</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="images/favicon_big.png">
   <script src="lang.js"></script>
   <style>
     .form-group {
@@ -920,9 +921,17 @@
       selectedDiagnoses.splice(index, 1);
       renderDiagnosisTags();
     }
-
   </script>
 
+  <!-- Footer/Signature -->
+  <div class="developer-signature" style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+    <div class="dev-brand">
+      <span data-i18n="dev_sig">A <strong>MayaMystic</strong> creation by Harsh Patel</span>
+      <span id="app-version" style="font-size: 11px; color: var(--text-muted); padding: 2px 6px; background: #e2e8f0; border-radius: 4px; margin-left: 8px; font-weight: 700;"></span>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 
 </html>

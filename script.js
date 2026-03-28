@@ -1,3 +1,4 @@
+const APP_VERSION = "1.1.0"; // Increment this for new updates
 const sheetURL =
 "https://opensheet.elk.sh/1sVklcRg69aE7KRNCAT9VZORzROEQMw4OHwpIGcfkeaE/1"
 
@@ -138,11 +139,7 @@ window.location="home.html"
 
 }else{
 
-document.getElementById("message").innerHTML=
-`${t("hospital_id_not_found")}<br>
-<a class="register-btn" href="${googleFormLink}" target="_blank">
-${t("register_patient")}
-</a>`
+document.getElementById("message").innerHTML= t("hospital_id_not_found");
 
 }
 
@@ -377,13 +374,7 @@ html+=`</div>`
 
 if(results.length===0){
 
-html=`
-<p>${t("no_patient_found")}</p>
-
-<a class="register-btn" href="${googleFormLink}" target="_blank">
-${t("register_patient")}
-</a>
-`
+html=`<p>${t("no_patient_found")}</p>`
 
 }
 
@@ -431,5 +422,12 @@ html+=createQRCard(id)
 })
 
 container.innerHTML=html
-
 }
+
+// Auto-display version if element exists
+document.addEventListener("DOMContentLoaded", () => {
+    const versionEl = document.getElementById("app-version");
+    if (versionEl) {
+        versionEl.innerText = APP_VERSION;
+    }
+});
