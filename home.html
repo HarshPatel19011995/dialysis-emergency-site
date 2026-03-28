@@ -42,14 +42,14 @@
 
 <div id="adminActions" style="display: none;">
 <a href="register-edit.html" class="register-btn" data-i18n="register_patient" style="background-color: var(--primary); margin-bottom: 10px;">
-Register Patient
+Register / Edit Details
 </a>
 
-<a href="qr-maker.html" class="register-btn" data-i18n="btn_create_qr">
+<a href="qr-maker.html" id="btnCreateQR" class="register-btn" data-i18n="btn_create_qr">
 Create Patient QR
 </a>
 
-<a href="all-patient-qr.html" class="register-btn" data-i18n="btn_all_qr">
+<a href="all-patient-qr.html" id="btnAllQR" class="register-btn" data-i18n="btn_all_qr">
 Generate All Patient QR
 </a>
 
@@ -192,6 +192,7 @@ View Shift-wise Schedule
 function logout(){
 localStorage.removeItem("patientID")
 localStorage.removeItem("isAdmin")
+localStorage.removeItem("userRole")
 window.location="index.html"
 }
 
@@ -207,6 +208,7 @@ function clearLocalData(){
 /* CHECK ROLE ON LOAD */
 document.addEventListener("DOMContentLoaded", () => {
     let isAdmin = localStorage.getItem("isAdmin") === "true";
+    let userRole = localStorage.getItem("userRole");
     let loggedInID = localStorage.getItem("patientID");
     
     let adminActions = document.getElementById("adminActions");
@@ -214,8 +216,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let myIdCardContent = document.getElementById("myIdCardContent");
 
     if (isAdmin && adminActions) {
-        // Admin View
+        // Admin View (Staff or Developer)
         adminActions.style.display = "block";
+        
+        // Hide QR buttons for Staff
+        if (userRole === "staff") {
+            let btnCreate = document.getElementById("btnCreateQR");
+            let btnAll = document.getElementById("btnAllQR");
+            if (btnCreate) btnCreate.style.display = "none";
+            if (btnAll) btnAll.style.display = "none";
+        }
     } else if (!isAdmin && myIdCardContainer && loggedInID) {
         // Patient View: Show personal QR automatically
         myIdCardContainer.style.display = "block";

@@ -37,7 +37,8 @@ const translations = {
     "hospital_id_not_found": { en: "Hospital ID not found.", gu: "હોસ્પિટલ આઈડી (ID) મળ્યો નથી." },
     "invalid_dev_id": { en: "Invalid Developer ID.", gu: "અમાન્ય ડેવલપર આઈડી (ID)." },
     "invalid_staff_id": { en: "Invalid Staff ID.", gu: "અમાન્ય સ્ટાફ આઈડી (ID)." },
-    "register_patient": { en: "Register Patient", gu: "દર્દીની નોંધણી કરો" },
+    "register_patient": { en: "Register / Edit Details", gu: "વિગતો નોંધો / સુધારો" },
+    "login_instruction": { en: "Registration and updates are handled by authorized staff only. Please contact staff or the system administrator.", gu: "નોંધણી અને સુધારા ફક્ત અધિકૃત સ્ટાફ દ્વારા જ કરવામાં આવે છે. કૃપા કરીને સ્ટાફ અથવા સિસ્ટમ એડમિનિસ્ટ્રેટરનો સંપર્ક કરો." },
     "hospital_id_label": { en: "Hospital ID:", gu: "હોસ્પિટલ આઈડી:" },
     "emergency_contact": { en: "Emergency Contact 1", gu: "ઇમરજન્સી સંપર્ક ૧" },
     "second_contact": { en: "Emergency Contact 2", gu: "બીજો સંપર્ક (ઇમરજન્સી ૨)" },
@@ -60,7 +61,7 @@ const translations = {
     // Basic Profile
     "age": { en: "Age", gu: "ઉંમર" },
     "sex": { en: "Sex/Gender", gu: "જાતિ" },
-    "center": { en: "Dialysis Center", gu: "ડાયાલિસિસ સેન્ટર" },
+    "center": { en: "Dialysis Center (Unit)", gu: "ડાયાલિસિસ સેન્ટર (યુનિટ)" },
     
     "health_profile": { en: "Health & Dialysis Profile", gu: "આરોગ્ય અને ડાયાલિસિસ પ્રોફાઇલ" },
     "blood_group": { en: "Blood Group", gu: "બ્લડ ગ્રુપ" },

@@ -133,7 +133,7 @@
     // New Form specific fields
     let age = getValue(p, ["Age", "ઉંમર"]);
     let sex = getValue(p, ["Sex", "જાતિ"]);
-    let dialysisCenter = getValue(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center"]);
+    let dialysisCenter = getValue(p, ["Dialysis center", "ડાયાલિસિસ સેન્ટર", "Center", "Hospital Name"]);
     let homeAddress = getValue(p, ["Address", "સરનામું", "Home"]);
 
     // New Medical Fields
@@ -176,7 +176,7 @@
     let html = `
       <h3>${name}</h3>
       <p style="margin-bottom: 4px;"><b>Hospital ID:</b> ${id}</p>
-      <p style="margin: 0; font-size: 14px; color: var(--text-muted);">
+      <p style="margin: 4px 0; font-size: 14px; color: var(--text-muted);">
         <span data-i18n="age">${t("age")}</span>: <b>${age}</b> &nbsp;|&nbsp; 
         <span data-i18n="sex">${t("sex")}</span>: <b>${sex}</b>
       </p>

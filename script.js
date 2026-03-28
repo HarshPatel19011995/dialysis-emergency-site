@@ -106,6 +106,7 @@ if (role === 'developer') {
     if (id === DEV_ID) {
         localStorage.setItem("patientID",id)
         localStorage.setItem("isAdmin", "true")
+        localStorage.setItem("userRole", "developer")
         window.location="home.html"
     } else {
         document.getElementById("message").innerHTML = t("invalid_dev_id");
@@ -117,6 +118,7 @@ if (role === 'staff') {
     if (id === STAFF_ID || id === ADMIN_ID) {
         localStorage.setItem("patientID",id)
         localStorage.setItem("isAdmin", "true")
+        localStorage.setItem("userRole", "staff")
         window.location="home.html"
     } else {
         document.getElementById("message").innerHTML = t("invalid_staff_id");
@@ -131,6 +133,7 @@ if(patient){
 
 localStorage.setItem("patientID",id)
 localStorage.setItem("isAdmin", "false")
+localStorage.setItem("userRole", "patient")
 window.location="home.html"
 
 }else{
@@ -355,7 +358,7 @@ html+=`
 
 if(localStorage.getItem("isAdmin") === "true") {
 html+=`
-  <a class="details-btn" href="register-edit.html?id=${encodeURIComponent(id)}" target="_blank" style="background-color: var(--primary);">
+  <a class="details-btn" href="register-edit.html?id=${encodeURIComponent(id)}" target="_blank" style="background-color: var(--primary); color: white;">
     ${t("edit_patient")}
   </a>
 `

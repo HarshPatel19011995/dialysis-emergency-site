@@ -81,7 +81,7 @@
 
     <div class="hospital-header">
       <img src="images/DESLogo_2.png" alt="Kidney Indicator" class="section-icon">
-      <h2 id="pageTitle" data-i18n="register_patient">Register Patient</h2>
+      <h2 id="pageTitle" data-i18n="register_patient">Register / Edit Details</h2>
       <p class="department" data-i18n="form_instruction">Please fill in the patient details accurately.</p>
     </div>
 
@@ -137,8 +137,11 @@
           <input type="text" id="f_id" required oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')">
         </div>
         <div class="form-group">
-          <label data-i18n="center">Dialysis Center</label>
-          <input type="text" id="f_center">
+          <label data-i18n="center">Dialysis Center (Unit)</label>
+          <input type="text" id="f_center" list="center-options" value="Shree Krishna Hospital Karamsad, Anand">
+          <datalist id="center-options">
+            <option value="Shree Krishna Hospital Karamsad, Anand">
+          </datalist>
         </div>
         <div style="display:flex; gap:10px;">
           <div class="form-group" style="flex:1;">
@@ -278,7 +281,9 @@
             <select id="f_epo">
               <option value="None">None</option>
               <option value="2000 IU">2000 IU</option>
+              <option value="3000 IU">3000 IU</option>
               <option value="4000 IU">4000 IU</option>
+              <option value="5000 IU">5000 IU</option>
               <option value="10000 IU">10000 IU</option>
             </select>
           </div>
@@ -695,7 +700,7 @@
       selectedDiagnoses = diagStr ? diagStr.split(",").map(s => s.trim()).filter(Boolean) : [];
       if (typeof renderDiagnosisTags === "function") renderDiagnosisTags();
       document.getElementById("f_diagnosis").value = diagStr;
-
+      document.getElementById("f_center").value = getSafeVal(p, ["Dialysis center", "Dialysis center (Unit)", "Center", "ડાયાલિસિસ સેન્ટર", "Hospital Name"]) || "Shree Krishna Hospital Karamsad, Anand";
       safeSetSelect("f_blood_group", getSafeVal(p, ["Blood Group", "બ્લડ ગ્રુપ"]));
       document.getElementById("f_weight").value = getSafeVal(p, ["Dry Weight", "Weight"]);
 
